@@ -120,9 +120,9 @@ Para os dados recebidos use:
 7. {istr} - Ignora texto, formato: [^0-9a-z(sp)]{1,}
 8. {all}  - Captura tudo, formato: [^\r\n\0]
 
-Exemplos de uso:
+#### Exemplos de uso 1:
 ```
-Esta função envia é um exemplo real e envia SMS para um determinado número.
+Esta função é um exemplo real e envia SMS para um determinado número.
 void SmsSendAfterEvent ()
 {
   1. O primeiro ponteiro necessário é para o número de telefone.
@@ -148,9 +148,9 @@ const char AtModem::kSendEchoOff[] =  { "ATE0\r\n\0" };
 > Coloca o modem em moto texto. Na prática do dia a dia, faça isto sempre.
 const char AtModem::kSendSmsTextMode[] = { "AT+CMGF=1\r\n\0" };
 
-> Perceba que dentro da string contem o modificador {pt} e este modificador fará o programa enviar a string contida
-dentro do ponteiro "AtModem::pDataList[ N ]" do exemplo anterior, onde N representa um número inteiro de acordo com
-a ordem dos dados a serem passados.
+> Perceba que dentro da string contem o modificador {pt} e este modificador fará o programa enviar a string
+contida dentro do ponteiro "AtModem::pDataList[ N ]" do exemplo anterior, onde N representa um número
+inteiro de acordo com a ordem dos dados a serem passados.
 > Nesse caso, o protocolo do modem espera a string com o número para onde o SMS será enviado.
 const char AtModem::kSendSmsSendConfig[] = { "AT+CMGS=\"{pt}\"\r\n\0" };
 
@@ -187,6 +187,56 @@ void AtModem::SmsSend ()
 ```
 
 Quando o SMS for enviado, o evento "Event::EndProcess" será disparado.
+
+#### Exemplos de uso 2:
+
+```
+Pegar a informação contida no RTC e arquivar dentro dos arrays de char day, clock e time zone.
+AtModem::pDataList[ 0 ] = &chaDay[ 0 ];
+AtModem::pDataList[ 1 ] = &chaClock[ 0 ];
+AtModem::pDataList[ 2 ] = &chaTimeZone[ 0 ];
+AtModem::RtcGet();
+```
+
+Passo a passo temos:
+```
+> O protocolo manda envia o comando "AT+CCLK?\r\n".
+const char AtModem::kSendCclk[] = { "AT+CCLK?\r\n\0" };
+
+> A resposta será data na forma de string como no exemplo abaixo:
+> +CCLK: "00/01/01,03:58:08+00"\r\n
+
+> Por isto, foram usados os modificadores {time} e {snum} para determinar o tipo de dado esperado.
+const char AtModem::kReceiveCclk[] = { "+CCLK: \"{time},{time}{snum}\0" };
+
+> Ponteiro para início do dado esperado
+const char *AtModem::pCclk = &AtModem::kReceiveCclk[ 0 ];
+
+> Função real usada para capturar a data e hora atual
+> Detalhes explicados acima.
+void AtModem::RtcGet ()
+{
+  AtModem::pDataTxToModem[ 0 ] = &AtModem::kSendCclk[ 0 ];
+  AtModem::pDataRxToModem[ 0 ] = '\0';
+
+  AtModem::pDataTxToModem[ 1 ] = '\0';
+  AtModem::pDataRxToModem[ 1 ] = '\0';
+
+  AtModem::StateMachineResetAndRun ();
+}
+```
+
+Para cada byte recebido pela porta serial é usada a função "AtModem::Get ( char achChar )" e esta função tem uma série de chamadas para a função
+```
+> __GetTest, eu uso dois _ quando não quero criar uma função estática de uso "privado".
+> Na ordem dos parâmetros, temos:
+> Ponteiro de início da string esperada;
+> Apontador para a string esperada; ( ficou estranho... )
+> Byte recebido pela porta serial;
+> Evento a ser disparado.
+AtModem::__GetTest ( &AtModem::pCclk, &AtModem::kReceiveCclk[ 0 ], achChar, Event::RTCRead );
+```
+
 
 ### Dica para virar um bom programador
 

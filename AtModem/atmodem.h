@@ -1,34 +1,55 @@
 #ifndef ATMODEM_H
 #define ATMODEM_H
 
-//#define I_NEED_USE_INTERNET_FUNCTIONS
+// Comente ou descomente estas constantes para definir qual funcionalidade você ira usar.
+// Manter as funcionalidades comentadas poupa memória do hardware.
+
+// Habilita conexão a internet e habilita pegar informação de geo possicionamento sem a 
+// necessidade de GPS instalado
+#define I_NEED_USE_INTERNET_FUNCTIONS
+
+// Habilita o uso do PIN ( Personal Identification Number ) para o cartão SIM de celular.
 #define I_NEED_SIM_PIN_FUNCTIONS
+
+// Habilita os eventos de power on/off e o comando de power off
 #define I_NEED_POWER_DOWN_FUNCTIONS
+
+// Habilita as funções SMS. Perceba que SMS é barato e prático para o dia a dia e tem uma
+// cobertura melhor do que GPRS, 3G e afins.
 #define I_NEED_SMS_FUNCTIONS
-//#define I_NEED_CALL_FUNCTIONS
-//#define I_NEED_GEO_FUNCTIONS
+
+// Habilita as funções de chamada do modem
+#define I_NEED_CALL_FUNCTIONS
+
+// Habilita a captura de latitude e longitude com baixa precisão. Perceba que os dados são submetidos a
+// um site de terceiros e o mesmo pode mudar sem aviso prévio ou conter erros. Use por sua conta.
+#define I_NEED_GEO_FUNCTIONS
+
+// Habilita a agenda do cartão CIM
 #define I_NEED_PHONEBOOK_FUNCTIONS
+
+// Habilita as funções do RTC ( Real Time Clock ) do modem.
 #define I_NEED_RTC_FUNCTIONS
+
+// Habilita as funções de qualidade do sinal da operadora de celular.
 #define I_NEED_QUALITY_FUNCTIONS
 
+// Habilita os comandos de configuração assim que o modem liga
 #define ENABLE_AUTO_POWER_ON_COMMANDS
+
+// Habilita a desconexão imediata da internet caso ocorra algum erro. Esta função é muito útil, pois,
+// as operadoras muitas vezes rejeitam a conexão e há ainda algumas particularides de alguns comandos AT
+// onde o comando de desconexão ajuda. Mantenha esta constante descomentada por recomendação.
 #define ENABLE_AUTO_INTERNET_DISCONECT
+
+// Esta é outra constante importante de manter habilitada por recomendação.
 #define ENABLE_AUTO_INTERNET_DISCONECT_AFTER_ERROR
 
+// Define a quantidade de dígitos do header length.
+// Quando o site faz uso do header length, o mesmo é usado para determinar o fim da conexão e gerar o evento.
+// Ex. Content-Length: 3495
+// @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 #define kDefContentLength 5
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Nao mude nada a partir desse ponto
 // Do not change anything from that point
@@ -55,13 +76,18 @@
   #undef ENABLE_AUTO_PIN_ENABLE
 #endif
 
+// Define os flags permitindo que um único byte seja usado para arquivar 8bits.
+// Economiza memória, porém, é mais lento do que o tipo Boolean, que usa um byte inteiro para cada bit.
 #define kDefFlagRuning 0
 #define kDefFlagNextStep 1
 #define kDefFlagWaiting 2
 #define kDefFlagInternetGet 3
 #define kDefFlagCheckEnd 4
 
-
+// Este enum é usado para ajudar na captura do header length.
+// Quando o site faz uso do header length, o mesmo é usado para determinar o fim da conexão e gerar o evento.
+// Ex. Content-Length: 3495
+// @see http://www.w3.org/Protocols/rfc2616/rfc2616-sec14.html
 namespace Step
 {
   enum eStep
@@ -74,101 +100,190 @@ namespace Step
 }
 using namespace Step;
 
-
+// Enum dos eventos do modem.
+// Perceba que o uC usado para processar os dados do modem provavelmente é muito mais rápido do que a porta serial
+// por onde os dados trafegam e há um atrazo entre o comando dado e o fim do mesmo, fazendo com que o código não seja
+// lenear. Por isto, você deve usar os eventos para monitorar o fim de uma ação ou um possível erro.
 namespace Event
 {
   enum eEvent
   {
+    // Modem livre.
     None,
+
+    // Erro na captura de tempo
     PTimeError,
+
+    // Erro na captura de número
     PNumError,
+
+    // Erro na captura de número com sinal
     PSNumError,
+
+    // Erro na captura de número hexadecimal
     PSHexError,
+
+    // Erro na captura de string
     PStrError,
+
+    // Erro na captura para p tipo all
     PAllError,
+
+    // Erro na captura de id do novo SMS
     PSmsError,
+
+    // Erro no ponteiro da mensagem
     PCmtMsgError,
+
+    // Erro no ponteiro da hora
     PCmtTimeError,
+
+    // Erro no ponteiro do dia
     PCmtDayError,
+
+    // Erro no ponteiro do número de telefone
     PCmtPhoneError,
 
+    // todo: root foi usado?
     #ifdef I_NEED_ROOT_FUNCTIONS
-    RootEnable,
-    RootDisable,
-    RootAddData,
-    RootDelData,
+      RootEnable,
+      RootDisable,
+      RootAddData,
+      RootDelData,
     #endif
 
     #ifdef I_NEED_USE_INTERNET_FUNCTIONS
+      // Início da chegada dos dados
       InternetReadStart,
+
+      // Fim da chegada dos dados
       InternetReadEnd,
+
+      // Fim da conexão
       Close,
+
+      // Erro de conexão
       ConnectionFailed,
+
+      // Conexão
       InternetConnect,
+
+      // Desconexão
       InternetDisconnect,
     #endif
+
     #ifdef I_NEED_GEO_FUNCTIONS
+      // Captura dos dados internos do modem, a serem usados para o posicionamento
       EnginneringData,
+
+      // ??????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
       EnginneringDataToGeo,
     #endif
+
     #ifdef I_NEED_PHONEBOOK_FUNCTIONS
+      // Fim do processo de busca da agenda do modem.
       PhoneBookFind,
     #endif
+
+    // Evento interno. Não use. Passo executado.
     EndLine,
+
+    // Evento interno. Não use. Todos os passos executados.
     EndProcess,
+
+    // Número do chamador capturado.
     CarrierNumberCaptured,
+
+    // "telefone" tocando
     Ring,
+
+    // Novo SMS recebido
     SMSNew,
+
+    // SMS enviado com sucesso
     SMSSend,
+
+    // SMS lido pos status
     SMSReadByStatus,
+
+    // SMS lido
     SMSRead,
+
+    // "SMS" da operadora de telefone lido.
+    // São aquelas mensagens informando o saldo da conta e SPAN com propaganda da mesma, que nunca são arquivadas pelo modem.
+    // Atenção: O modem não captura estas mensagens, por isto, as mesmas devem ser processadas de imediato ou serão perdidas.
+    //          Na prática, quem liga?
     SMSCompanyRead,
+
+    // ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
     SMSNumberAvailable,
+
+    // ?????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????????
     SMSDeleted,
+
+    // Evento de modem ligado
     PowerOn,
 
-
+    // O SIM Card está pronto para uso
     SimReady,
+
+    // O PIN do SIM Card é necessário
     SimPin,
+
+    // O PUK do SIM Card é necessário.
+    // Atenção: Não foi implementado nessa classe.
     SimPuk,
+
+    // O PhPIN do SIM Card é necessário.
+    // Atenção: Não foi implementado nessa classe.
     SimPhPin,
+
+    // O PhPUK do SIM Card é necessário.
+    // Atenção: Não foi implementado nessa classe.
     SimPhPuk,
+
+    // Atenção: Não foi implementado nessa classe.
     SimPinNotFound,
 
+    // Chamada não atendida
     NoCarrier,
+
+    // O modem não consegue ligar
     NoDialTone,
+
+    // Ligação não atendida
     NoAnswer,
+
+    // Modem ou linha ocupadas
     Busy,
+
+    // Erro.
     Error,
 
+    // Modem pronto para uso
     CallReady,
+
+    // O modem desligou
     PowerDown,
+
+    // Qualidade do sinal da antena capturado
     SignalQuality,
+
+    // RTC lido
     RTCRead,
 
+    // Permite ao usuário criar seu próprio evento
     UserEvent1,
+
+    // Permite ao usuário criar seu próprio evento
     UserEvent2,
-    SetRtc,
-    ReceiveRootNumber,
-    CommandNormal,
-    AddTimer,
-    CommandDisabe,
-    CommandEnable,
-    CommandReset,
-    TimerOn,
-    TimerOff,
-    ReadTimer,
-    IntervalSensor,
-    UserEvent14,
-    UserEvent15,
-    UserEvent16,
-    UserEvent17,
-    UserEvent18,
-    UserEvent19,
-    UserEvent20
+
+    // RTC ajustado para a nova hora
+    SetRtc
   };
 }
 using namespace Event;
+
 
 extern "C"
 {

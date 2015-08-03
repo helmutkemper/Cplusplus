@@ -141,13 +141,16 @@ Passo a passo temos:
 > O protocolo pede que se espere um "OK\r\n" para se mandar o próximo comando.
 const char AtModem::kReceiveOk[] = { "OK\r\n\0" };
 
-> Como eu disse, o código sempre pode melhorar e este comando poderia ser enviado uma única vez no evento power on
+> Como eu disse, o código sempre pode melhorar e este comando poderia ser enviado uma única vez no evento
+ power on
 const char AtModem::kSendEchoOff[] =  { "ATE0\r\n\0" };
 
 > Coloca o modem em moto texto. Na prática do dia a dia, faça isto sempre.
 const char AtModem::kSendSmsTextMode[] = { "AT+CMGF=1\r\n\0" };
 
-> Perceba que dentro da string contem o modificador {pt} e este modificador fará o programa enviar a string contida dentro do ponteiro "AtModem::pDataList[ N ]" do exemplo anterior, onde N representa um número inteiro de acordo com a ordem dos dados a serem passados.
+> Perceba que dentro da string contem o modificador {pt} e este modificador fará o programa enviar a string contida
+dentro do ponteiro "AtModem::pDataList[ N ]" do exemplo anterior, onde N representa um número inteiro de acordo com
+a ordem dos dados a serem passados.
 > Nesse caso, o protocolo do modem espera a string com o número para onde o SMS será enviado.
 const char AtModem::kSendSmsSendConfig[] = { "AT+CMGS=\"{pt}\"\r\n\0" };
 

@@ -1,6 +1,6 @@
 # Cplusplus
 
-*Dicas de programação.*
+'''Dicas de programação.'''
 
 Quando se trabalha com com C++ para hardware deve-se tomar cuidado no uso excessivo de ponteiros para a inicialização de classes, por isto, a maioria das classes são estáticas. Isto poupa memória e tempo de execução.
 

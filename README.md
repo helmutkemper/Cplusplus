@@ -237,6 +237,104 @@ Para cada byte recebido pela porta serial é usada a função "AtModem::Get ( ch
 AtModem::__GetTest ( &AtModem::pCclk, &AtModem::kReceiveCclk[ 0 ], achChar, Event::RTCRead );
 ```
 
+### Exemplos de uso real para a classe do modem
+
+```
+// Adiciona uma nova entrada na agenda do SIM Card por endereço da memória
+// Este método usa os arrays de char id, phone number e name que já devem estar populados quando 
+// o método "AtModem::PhoneBookIdSet ()" for executado.
+void PhoneBookAddById ()
+{
+  AtModem::pDataList[ 0 ] = &chaId[ 0 ];
+  AtModem::pDataList[ 1 ] = &chaPhoneNumber[ 0 ];
+  AtModem::pDataList[ 2 ] = &chaName[ 0 ];
+  AtModem::PhoneBookIdSet ();
+}
+```
+
+```
+void SmsSend ()
+{
+  AtModem::pDataList[ 0 ] = &chaPhoneNumber[ 0 ];
+  AtModem::pDataList[ 1 ] = &chaTextToSend[ 0 ];
+  AtModem::SmsSend();
+}
+```
+
+```
+void StatusRecebido ( Event::eEvent aschStatus )
+{
+  if ( aschStatus == Event::EndLine )
+  {
+    return;
+  }
+
+  switch ( aschStatus )
+  {
+    case Event::EndProcess:
+      StateMachine::Step();
+      break;
+
+    case Event::SMSNew:
+      // "AtModem::pchSmsNew" pertence a própria classe e é o id do SMS novo
+      // para poder ser lido
+      AtModem::pDataList[ 0 ] = AtModem::pchSmsNew;
+      // Array de char para o status da mensagem
+      AtModem::pDataList[ 1 ] = &chaStatus[ 0 ];
+      // Array de char para o telefone de onde o SMS foi enviado
+      AtModem::pDataList[ 2 ] = &chaTelefonNumber[ 0 ];
+      // Array de char para a entrada da agenda contendo o telefone, caso seja
+      // identificado
+      AtModem::pDataList[ 3 ] = &chaUserName[ 0 ];
+      // Array de char para a data
+      AtModem::pDataList[ 4 ] = &chaDate[ 0 ];
+      // Array de char para hora
+      AtModem::pDataList[ 5 ] = &chaTime[ 0 ];
+      // Array de char para a zona de tempo
+      AtModem::pDataList[ 6 ] = &chaTimeZone[ 0 ];
+      // Array de char para o texto da mensagem
+      AtModem::pDataList[ 7 ] = &chaText[ 0 ];
+      // Repete o id da mensagem para que a mesma seja apagada
+      AtModem::pDataList[ 8 ] = AtModem::pchSmsNew;
+      // Vai disparar o evento "Event::SMSRead"
+      AtModem::SmsReadAndDeleteById();
+      break;
+
+    case Event::SMSRead:
+      // O SMS foi lido e os dados estão nos arrays de char citados acima.
+      // Agora vamos supor que o SMS tem um texto específico para ser reconhecido.
+      // "ligar o ar" e "desligar o ar" para ligar e desligar um ar condicionado.
+      // Primeiro perceba que a palavra "ligar" está contida dentro da palavra "desligar",
+      // por isto, vamos usar um "+" antes de cada comando.
+      // Em algum lugar do código você criou
+      // const char kReceiveLigarAr[] = { "+ligar ar\0" };
+      // const char kReceiveDesligarAr[] = { "+desligar ar\0" };
+      //
+      // O comando acima arquivou o SMS no array de char "chaText"
+      // Logo, as duas linhas abaixo vão testar e disparar o evento para as strings acima
+
+      AtModem::Checker ( &kReceiveLigarAr[ 0 ], &chaText[ 0 ], Event::LigarAr );
+      AtModem::Checker ( &kReceiveDesligarAr[ 0 ], &chaText[ 0 ], Event::DesligarAr );
+      
+      // Embora haja uma boa economia de memória se o texto do SMS for processado 
+      // direto, arquivar o mesmo permite identificar o telefone de onde o mesmo partiu
+      // permitindo implementar mais segurança ao processo.
+  }
+}
+```
+
+Dentro do seu código, crie a variável de evento.
+```
+Event::eEvent enMyEvent;
+```
+
+Depois, dentro do seu loop, use o seguinte código:
+```
+AtModem::StateMachineRun ();
+enMyEvent = StackEnum::Get();
+StatusRecebido( enMyEvent );
+```
+
 
 ### Dica para virar um bom programador
 

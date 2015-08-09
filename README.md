@@ -407,6 +407,67 @@ StatusRecebido( lenMyEvent );
 ```
 
 
+#### Restaure o seu modem
+
+Você tem um modem SIM900, passou algum comando estranho e agora ele não está mais funcionando.
+
+Existem três opções principais:
+
+1. Os pinos Tx e Rx estão invertidos;
+
+2. O modem está em baixo consumo e a porta serial está desligada;
+
+3. A velocidade da porta está errada.
+
+Solução:
+
+1. Esta é a mais simples de todas, simplesmente inverta os pinos. E lembre-se, pode haver mau contato;
+
+2. Você passou o comando "AT+CSCLK=1" e colocou o modem em repouso. Basta você procurar pelo pino DTR e colocar ele em LOW, depois, usa o comando "AT+CSCLK=0" e tira o modem do baixo consumo;
+
+3. Se você tiver um Arduino a mão, você deve usar o código abaixo com o modem ligado na porta serial 2. Quando ele terminar de ser executado, o modem estará transmitindo a 115200bps.
+
+```
+long baud[] = { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200, 0 };
+int i = 0;
+void setup() {
+  Serial.begin ( 115200 );
+}
+void loop() {
+    Serial2.begin ( baud[ i ] );
+    Serial.println ( baud[ i ] );
+    Serial2.write ( "AT+IPR=115200\r\n" );
+    delay ( 5000 );
+    i++;  
+    if ( baud[ i ] == 0 )
+    {
+        Serial.write ("fim!");
+        while(true);
+    }
+}
+```
+
+
+#### Restaure o adaptador Bluetooth
+
+Caso você não consiga fazer o Bluetooth funcionar, procure pelo pino 'AT Mode' e o coloque em '0' e em seguida ligue o modem. Só então, coloque AT Mode em '1' e para todas as velocidades, passe o comando 'AT+ORGL\r\n\0'.
+Uma dica é seguir a antena da placa, ele costuma ser o primeiro pino quando você segue a antena do dispositivo para a placa padrão do mercado.
+
+Caso tenha um Arduino, rode o código abaixo.
+
+```
+// AT Mode = 1
+int contador = 0;
+double velocidade [] = { 1200, 2400, 4800, 9600, 19200, 38400, 57600, 
+115200, 230400, 460800, 921600, 1382400, 0 };
+while( velocidade[ contador ] != 0) {
+  Serial.begin ( velocidade[ contador++ ] );
+  Serial.write ( “AT+ORGL\r\n” );
+  delay ( 500 );
+}
+```
+
+
 ### Use threads no seu código
 
 Uma thread simples é uma forma de permitir à plataforma rodar várias coisas ao "mesmo tempo" sem necessitar travar o código enquanto espera algo. Ela é muito melhor do que usar delay().

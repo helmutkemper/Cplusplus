@@ -365,19 +365,54 @@ class AtModem
       void static PowerDown ();
 
       /** Configura o modem com os comandos básicos de uso assim que o modem fica ativo.
-       *
+       *  Desliga a função 'echo'
+       *  Configura SMS
+       *  Habilita as funções avançadas das operadoras para usar na geo localização do modem sem uso de GPS
        */
       void static OnModemPowerOn ();
     #endif
 
     #ifdef I_NEED_SIM_PIN_FUNCTIONS
+      /** Pega o status do SIM Card
+       *  Exemplo: AT+CPIN?\r\n\0
+       */
       static const char kSendSinStatus[];
+
+      /** Envia o número PIN ( Personal Identification Number ).
+       *  Exemplo: "AT+CLCK=\"SC\",0,\"{pt}\",1\r\n\0
+       */
       static const char kSendSinPinUnlock[];
+
+      /** Envia o PIN ( Personal Identification Number ) para bloquear o SIM Card.
+       *  Perceba que este comando só pode ser enviado assim que o modem é ligado, ou dá erro.
+       *  Exemplo: AT+CLCK="SC",1,"{pt}",1\r\n\0
+       */
       static const char kSendSinPinLock[];
+
+      /** Troca o PIN ( Personal Identification Number ) do SIM Card.
+       *  Perceba que este comando só pode ser enviado assim que o modem é ligado, ou dá erro.
+       *  Exemplo: AT+CPWD="SC","{pt}","{pt}"\r\n\0
+       */
       static const char kSendSinPinChange[];
+
+      /** Envia o PIN ( Personal Identification Number ) para habilitar o SIM Card
+       *  Exemplo: AT+CPIN="{pt}"\r\n\0
+       */
       static const char kSendSinPinEnter[];
+
+      /** Constante SIN Card pronto.
+       *  Exemplo: +CPIN: READY\r\n\0
+       */
       static const char kReceiveSimReady[];
+
+      /** Constante SIM Card espera o PIN ( Personal Identification Number )
+       *  Exemplo: +CPIN: SIM PIN\r\n\0
+       */
       static const char kReceiveSimPin[];
+
+      /** Constante SIM Card espera o PUK ( PIN Unlock Key )
+       *  Exemplo: +CPIN: SIM PUK\r\n\0
+       */
       static const char kReceiveSimPuk[];
       static const char kReceiveSimPhPin[];
       static const char kReceiveSimPhPuk[];

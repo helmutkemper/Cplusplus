@@ -407,6 +407,41 @@ StatusRecebido( lenMyEvent );
 ```
 
 
+### Use threads no seu código
+
+Uma thread simples é uma forma de permitir à plataforma rodar várias coisas ao "mesmo tempo" sem necessitar travar o código enquanto espera algo. Ela é muito melhor do que usar delay().
+No caso do Arduino, a forma mais simples de se fazer uma thread é usando o comando millis(), onde ele retorna o tempo em milissegundos desde que o arduino foi ligado.
+
+```
+// Defina uma constante de tempo em milissegundos para a thread esperar a próxima interação
+// 1000 é igual a 1 segundo
+#define THREAD_INTERVAL 40000
+
+// Crie uma variável do tipo double
+double threadInterval;
+
+// No setup, inicialize a thread
+void setup ()
+{
+  threadInterval = millis();
+}
+
+// No loop, monitore a thread
+void loop()
+{
+  if ( threadInterval + THREAD_INTERVAL <= millis() )
+  {
+    // Reset o contador de tempo
+    threadInterval = millis();
+    
+    // Execute a função da thread
+    // Tenha em mente que o intervalo entre execuções pode variar
+    minhaFuncaoDaThread();
+  }
+}
+```
+
+
 ### Dica para virar um bom programador
 
 Pare de escutar as pessoas que nunca programaram quando elas falam sobre programação;

@@ -58,13 +58,13 @@ Por padrão, eu costumo usar enumerador para eventos e o mesmo costuma ficar den
 
 Não encare a máquina de estados como solução final para tudo, ela organiza muito bem o código, mas, ela requer memória e tempo de processamento. Por isto, use com sabedoria.
 
-Quando usar máquinas de estados:
+#### Quando usar máquinas de estados:
 
 Em alguns tipos de aplicações, geralmente com dispositivos baseados em porta serial, os eventos acontecem de forma assíncrona e a velocidade dos dados de entrada é infinitamente baixa em relação a velocidade de processamento da plataforma, assim a máquina de estados deixa a plataforma livre para trabalhar enquanto o dado esperado não chega por completo. A outra funcionalidade dela é arquivar uma lista de passos a serem executados para se cumprir uma tarefa.
  
 Nesse ponto, imagine um modem GPRS executado um programa controlado por SMS para interagir com o usuário. O protocolo do modem baseado em comandos AT necessita passar uma série de comandos, e a cada comando dado o mesmo deve responder algo antes do próximo comando ser enviado. Assim, há uma lista de passos a serem executados antes de um SMS ser enviado ou lido e a máquina de estados é excelente para organizar o código e deixar a plataforma livre para outras tarefas enquanto processa as necessidades do protocolo do modem. 
 
-Como usar a máquina de estados:
+##### Como usar a máquina de estados:
 
 A máquina de estados do código foi feita para trabalhar com o envio e recebimento de strings fixas, onde uma string formatada é enviada e recebida o tempo todo para cada comando e você deve ter isto em mente na hora do uso.
 
@@ -142,45 +142,44 @@ Para os dados recebidos use:
 Esta função é um exemplo real e envia SMS para um determinado número.
 void SmsSendAfterEvent ()
 {
-  1. O primeiro ponteiro necessário é para o número de telefone.
+  // 1. O primeiro ponteiro necessário é para o número de telefone.
   AtModem::pDataList[ 0 ] = &SmsTelefon[ 0 ];
 
-  2. O segundo ponteiro é para a mensagem a ser enviada.
+  // 2. O segundo ponteiro é para a mensagem a ser enviada.
   AtModem::pDataList[ 1 ] = &chTextSendAfterEvent[ 0 ];
 
-  3. Chama a função de envio de SMS.
+  // 3. Chama a função de envio de SMS.
   AtModem::SmsSend();
 }
 ```
 
 Passo a passo temos:
 ```
-> O protocolo pede que se espere um "OK\r\n" para se mandar o próximo comando.
+// O protocolo pede que se espere um "OK\r\n" para se mandar o próximo comando.
 const char AtModem::kReceiveOk[] = { "OK\r\n\0" };
 
-> Como eu disse, o código sempre pode melhorar e este comando poderia ser enviado uma única vez no evento
- power on
+// Como eu disse, o código sempre pode melhorar e este comando poderia ser enviado uma única vez no evento power on
 const char AtModem::kSendEchoOff[] =  { "ATE0\r\n\0" };
 
-> Coloca o modem em moto texto. Na prática do dia a dia, faça isto sempre.
+// Coloca o modem em moto texto. Na prática do dia a dia, faça isto sempre.
 const char AtModem::kSendSmsTextMode[] = { "AT+CMGF=1\r\n\0" };
 
-> Perceba que dentro da string contem o modificador {pt} e este modificador fará o programa enviar a string
-contida dentro do ponteiro "AtModem::pDataList[ N ]" do exemplo anterior, onde N representa um número
-inteiro de acordo com a ordem dos dados a serem passados.
-> Nesse caso, o protocolo do modem espera a string com o número para onde o SMS será enviado.
+// Perceba que dentro da string contem o modificador {pt} e este modificador fará o programa enviar a string
+// contida dentro do ponteiro "AtModem::pDataList[ n° ]" do exemplo anterior, onde n° representa um número
+// inteiro de acordo com a ordem dos dados a serem passados.
+// Nesse caso, o protocolo do modem espera a string com o número para onde o SMS será enviado.
 const char AtModem::kSendSmsSendConfig[] = { "AT+CMGS=\"{pt}\"\r\n\0" };
 
-> O protocolo pede pela para esperar a string "> " antes de enviar o texto.
+// O protocolo pede pela para esperar a string "> " antes de enviar o texto.
 const char AtModem::kReceiveSmsTextRedyToSend[]	= { "> " };
 
-> O modificador {pt} é usado, como no exemplo acima, para apontar para o texto a ser enviado.
-> O modificador {bye} envia o comando de fim de texto, conforme o protocolo do modem.
+// O modificador {pt} é usado, como no exemplo acima, para apontar para o texto a ser enviado.
+// O modificador {bye} envia o comando de fim de texto, conforme o protocolo do modem.
 const char AtModem::kSendSmsSendText[] = { "{pt}{bye}\0" };
 
 void AtModem::SmsSend ()
 {
-  > Todos os passos são enviados conforme manda o manual do modem.
+  // Todos os passos são enviados conforme manda o manual do modem.
   AtModem::pDataTxToModem[ 0 ] = &AtModem::kSendEchoOff[ 0 ];
   AtModem::pDataRxToModem[ 0 ] = &AtModem::kReceiveOk[ 0 ];
 
@@ -193,11 +192,8 @@ void AtModem::SmsSend ()
   AtModem::pDataTxToModem[ 3 ] = &AtModem::kSendSmsSendText[ 0 ];
   AtModem::pDataRxToModem[ 3 ] = &AtModem::kReceiveOk[ 0 ];
 
-  AtModem::pDataTxToModem[ 4 ] = &AtModem::kSendEchoOff[ 0 ];
-  AtModem::pDataRxToModem[ 4 ] = &AtModem::kReceiveOk[ 0 ];
-
-  AtModem::pDataTxToModem[ 5 ] = '\0';
-  AtModem::pDataRxToModem[ 5 ] = '\0';
+  AtModem::pDataTxToModem[ 4 ] = '\0';
+  AtModem::pDataRxToModem[ 4 ] = '\0';
 
   AtModem::StateMachineResetAndRun ();
 }
@@ -208,7 +204,7 @@ Quando o SMS for enviado, o evento "Event::EndProcess" será disparado.
 #### Exemplos de uso 2:
 
 ```
-Pegar a informação contida no RTC e arquivar dentro dos arrays de char day, clock e time zone.
+// Pegar a informação contida no RTC e arquivar dentro dos arrays de char day, clock e time zone.
 AtModem::pDataList[ 0 ] = &chaDay[ 0 ];
 AtModem::pDataList[ 1 ] = &chaClock[ 0 ];
 AtModem::pDataList[ 2 ] = &chaTimeZone[ 0 ];
@@ -217,24 +213,23 @@ AtModem::RtcGet();
 
 Passo a passo temos:
 ```
-> O protocolo manda envia o comando "AT+CCLK?\r\n".
+// O protocolo manda envia o comando "AT+CCLK?\r\n".
 const char AtModem::kSendCclk[] = { "AT+CCLK?\r\n\0" };
 
-> A resposta será data na forma de string como no exemplo abaixo:
-> +CCLK: "00/01/01,03:58:08+00"\r\n
-
-> Por isto, foram usados os modificadores {time} e {snum} para determinar o tipo de dado esperado.
+// A resposta será data na forma de string como no exemplo abaixo:
+// +CCLK: "00/01/01,03:58:08+00"\r\n
+// Por isto, foram usados os modificadores {time} e {snum} para determinar o tipo de dado esperado.
 const char AtModem::kReceiveCclk[] = { "+CCLK: \"{time},{time}{snum}\0" };
 
-> Ponteiro para início do dado esperado
+// Ponteiro para início do dado esperado
 const char *AtModem::pCclk = &AtModem::kReceiveCclk[ 0 ];
 
-> Função real usada para capturar a data e hora atual
-> Detalhes explicados acima.
+// Função real usada para capturar a data e hora atual
+// Detalhes explicados acima.
 void AtModem::RtcGet ()
 {
   AtModem::pDataTxToModem[ 0 ] = &AtModem::kSendCclk[ 0 ];
-  AtModem::pDataRxToModem[ 0 ] = '\0';
+  AtModem::pDataRxToModem[ 0 ] = '\0'; // '\0' e 0x00 são a mesma coisa
 
   AtModem::pDataTxToModem[ 1 ] = '\0';
   AtModem::pDataRxToModem[ 1 ] = '\0';
@@ -245,19 +240,19 @@ void AtModem::RtcGet ()
 
 Para cada byte recebido pela porta serial é usada a função "AtModem::Get ( char achChar )" e esta função tem uma série de chamadas para a função
 ```
-> __GetTest, eu uso dois _ quando não quero criar uma função estática de uso "privado".
-> Na ordem dos parâmetros, temos:
-> Ponteiro de início da string esperada;
-> Apontador para a string esperada; ( ficou estranho... )
-> Byte recebido pela porta serial;
-> Evento a ser disparado.
+// __GetTest, eu uso dois _ quando não quero criar uma função estática de uso "privado".
+// Na ordem dos parâmetros, temos:
+// Ponteiro de início da string esperada;
+// Apontador para a string esperada;
+// Byte recebido pela porta serial;
+// Evento a ser disparado.
 AtModem::__GetTest ( &AtModem::pCclk, &AtModem::kReceiveCclk[ 0 ], achChar, Event::RTCRead );
 ```
 
-### Exemplos de uso real para a classe do modem
+#### Exemplos de uso real para a classe do modem
 
 ```
-// Adiciona uma nova entrada na agenda do SIM Card por endereço da memória
+// Adiciona uma nova entrada na agenda do SIM Card por endereço de memória
 // Este método usa os arrays de char id, phone number e name que já devem estar populados quando 
 // o método "AtModem::PhoneBookIdSet ()" for executado.
 void PhoneBookAddById ()

@@ -1,5 +1,6 @@
 ## Cplusplus
 
+
 ### Caia na real com Arduino
 
 Eu tenho visto muitas pessoas falando muito bem do Arduino e outras falando muito mal do Arduino.
@@ -24,6 +25,7 @@ Muitos vão falar mal do Arduino e de C/C++ e vão partir para linguagens de pro
 
 1. Você já tem capacidade de fazer do zero e só está ganhando tempo?
 2. A linguagem escolhida é a melhor para o projeto ou para você? Por exemplo, Python é mais fácil do que C/C++, porém, é 100x mais lento e requer a instalação de uma máquina virtual para rodar.
+
 
 ### Dicas de programação.
 
@@ -50,6 +52,7 @@ Ao contrário do que diz a lenda sobre ponteiros, eles não são complicados de 
 
 Lembre-se, você está trabalhando com exatas e não há espaço para lendas ou achismos, ou você sabe, ou você deve estudar mais.
 
+
 ### Máquinas de estados finitos:
 
 Máquina de estados é uma excelente forma de manter o código organizado, principalmente quando o código é complexo e necessita de muitas etapas a serem cumpridas antes de uma tarefa ser executada. Por isto, muitos códigos que trabalham com dispositivos seriais são baseados em máquinas de estado e a conclusão das tarefas gera um evento.
@@ -58,11 +61,13 @@ Por padrão, eu costumo usar enumerador para eventos e o mesmo costuma ficar den
 
 Não encare a máquina de estados como solução final para tudo, ela organiza muito bem o código, mas, ela requer memória e tempo de processamento. Por isto, use com sabedoria.
 
+
 #### Quando usar máquinas de estados:
 
 Em alguns tipos de aplicações, geralmente com dispositivos baseados em porta serial, os eventos acontecem de forma assíncrona e a velocidade dos dados de entrada é infinitamente baixa em relação a velocidade de processamento da plataforma, assim a máquina de estados deixa a plataforma livre para trabalhar enquanto o dado esperado não chega por completo. A outra funcionalidade dela é arquivar uma lista de passos a serem executados para se cumprir uma tarefa.
  
 Nesse ponto, imagine um modem GPRS executado um programa controlado por SMS para interagir com o usuário. O protocolo do modem baseado em comandos AT necessita passar uma série de comandos, e a cada comando dado o mesmo deve responder algo antes do próximo comando ser enviado. Assim, há uma lista de passos a serem executados antes de um SMS ser enviado ou lido e a máquina de estados é excelente para organizar o código e deixar a plataforma livre para outras tarefas enquanto processa as necessidades do protocolo do modem. 
+
 
 ##### Como usar a máquina de estados:
 
@@ -137,16 +142,17 @@ Para os dados recebidos use:
 12. {pDAY} - Ponteiro da classe que aponta para a data do SMS
 13. {pPHO} - Ponteiro da classe que aponta para o número do telefone do SMS
 
+
 #### Exemplos de uso 1:
 ```
 Esta função é um exemplo real e envia SMS para um determinado número.
 void SmsSendAfterEvent ()
 {
   // 1. O primeiro ponteiro necessário é para o número de telefone.
-  AtModem::pDataList[ 0 ] = &SmsTelefon[ 0 ];
+  AtModem::pDataList[ 0 ] = &gchaSmsTelefon[ 0 ];
 
   // 2. O segundo ponteiro é para a mensagem a ser enviada.
-  AtModem::pDataList[ 1 ] = &chTextSendAfterEvent[ 0 ];
+  AtModem::pDataList[ 1 ] = &gchaTextSendAfterEvent[ 0 ];
 
   // 3. Chama a função de envio de SMS.
   AtModem::SmsSend();
@@ -201,6 +207,7 @@ void AtModem::SmsSend ()
 
 Quando o SMS for enviado, o evento "Event::EndProcess" será disparado.
 
+
 #### Exemplos de uso 2:
 
 ```
@@ -249,7 +256,57 @@ Para cada byte recebido pela porta serial é usada a função "AtModem::Get ( ch
 AtModem::__GetTest ( &AtModem::pCclk, &AtModem::kReceiveCclk[ 0 ], achChar, Event::RTCRead );
 ```
 
+
 #### Exemplos de uso real para a classe do modem
+
+```
+void setup()
+{
+  // Configure tudo o que necessitar
+  // Configure a porta serial
+  Serial1.begin( 115200 );
+
+  // Crie as variáveis abaixo para arquivar o SMS.
+  // Não há necessidade disso na maioria dos casos, mas, esta classe foi feita
+  // Originalmente para um cliente e a sua aplicação necessitava.
+  // '[a|g|l]' indica o escopo [argumento de método|global|local], 'ch' indica o tipo char e 'a' indica o modificador array, ou seja, 'gcha' é um array de char global.
+  // Resumindo: escopo + tipo [+ modificador]
+  AtModem::pchSmsNew     = &gchaSmsIdNew[ 0 ];
+  AtModem::pchCmtPhone   = &gchaSmsTelefon[ 0 ];
+  AtModem::pchCmtDay     = &gchaSmsDate[ 0 ];
+  AtModem::pchCmtTime    = &gchaSmsTime[ 0 ];
+  AtModem::pchCmtMessage = &gchaSmsText[ 0 ];
+
+  // Crie uma função para enviar os dado.
+  // Veja o exemplo mais abaixo.
+  AtModem::DataSendEvent = &fnDadoEnviado;
+  
+  // Inicialize a classe
+  AtModem::Init ();
+}
+```
+
+```
+// No caso do Arduino:
+// Crie uma função para enviar os dados da porta serial
+// Como você pode perceber, a classe principal não faz acesso a hardware
+// diretamente.
+void fnDadoEnviado ( char achDado )
+{
+  Serial1.write ( achDado );
+}
+```
+
+```
+// No caso do Arduino:
+// Para usar a porta serial 1, crie um evento para a porta serial
+// Leia o dado e o transmita a classe do modem.
+void serialEvent1 ()
+{
+  char lchDado = Serial1.read();
+  AtModem::Get( lchDado );
+}
+```
 
 ```
 // Adiciona uma nova entrada na agenda do SIM Card por endereço de memória
@@ -257,9 +314,9 @@ AtModem::__GetTest ( &AtModem::pCclk, &AtModem::kReceiveCclk[ 0 ], achChar, Even
 // o método "AtModem::PhoneBookIdSet ()" for executado.
 void PhoneBookAddById ()
 {
-  AtModem::pDataList[ 0 ] = &chaId[ 0 ];
-  AtModem::pDataList[ 1 ] = &chaPhoneNumber[ 0 ];
-  AtModem::pDataList[ 2 ] = &chaName[ 0 ];
+  AtModem::pDataList[ 0 ] = &gchaId[ 0 ];
+  AtModem::pDataList[ 1 ] = &gchaPhoneNumber[ 0 ];
+  AtModem::pDataList[ 2 ] = &gchaName[ 0 ];
   AtModem::PhoneBookIdSet ();
 }
 ```
@@ -267,21 +324,21 @@ void PhoneBookAddById ()
 ```
 void SmsSend ()
 {
-  AtModem::pDataList[ 0 ] = &chaPhoneNumber[ 0 ];
-  AtModem::pDataList[ 1 ] = &chaTextToSend[ 0 ];
+  AtModem::pDataList[ 0 ] = &gchaPhoneNumber[ 0 ];
+  AtModem::pDataList[ 1 ] = &gchaTextToSend[ 0 ];
   AtModem::SmsSend();
 }
 ```
 
 ```
-void StatusRecebido ( Event::eEvent aschStatus )
+void StatusRecebido ( Event::eEvent aenStatus )
 {
-  if ( aschStatus == Event::EndLine )
+  if ( aenStatus == Event::EndLine )
   {
     return;
   }
 
-  switch ( aschStatus )
+  switch ( aenStatus )
   {
     case Event::EndProcess:
       StateMachine::Step();
@@ -292,20 +349,20 @@ void StatusRecebido ( Event::eEvent aschStatus )
       // para poder ser lido
       AtModem::pDataList[ 0 ] = AtModem::pchSmsNew;
       // Array de char para o status da mensagem
-      AtModem::pDataList[ 1 ] = &chaStatus[ 0 ];
+      AtModem::pDataList[ 1 ] = &gchaStatus[ 0 ];
       // Array de char para o telefone de onde o SMS foi enviado
-      AtModem::pDataList[ 2 ] = &chaTelefonNumber[ 0 ];
+      AtModem::pDataList[ 2 ] = &gchaTelefonNumber[ 0 ];
       // Array de char para a entrada da agenda contendo o telefone, caso seja
       // identificado
-      AtModem::pDataList[ 3 ] = &chaUserName[ 0 ];
+      AtModem::pDataList[ 3 ] = &gchaUserName[ 0 ];
       // Array de char para a data
-      AtModem::pDataList[ 4 ] = &chaDate[ 0 ];
+      AtModem::pDataList[ 4 ] = &gchaDate[ 0 ];
       // Array de char para hora
-      AtModem::pDataList[ 5 ] = &chaTime[ 0 ];
+      AtModem::pDataList[ 5 ] = &gchaTime[ 0 ];
       // Array de char para a zona de tempo
-      AtModem::pDataList[ 6 ] = &chaTimeZone[ 0 ];
+      AtModem::pDataList[ 6 ] = &gchaTimeZone[ 0 ];
       // Array de char para o texto da mensagem
-      AtModem::pDataList[ 7 ] = &chaText[ 0 ];
+      AtModem::pDataList[ 7 ] = &gchaText[ 0 ];
       // Repete o id da mensagem para que a mesma seja apagada
       AtModem::pDataList[ 8 ] = AtModem::pchSmsNew;
       // Vai disparar o evento "Event::SMSRead"
@@ -343,8 +400,8 @@ Event::eEvent enMyEvent;
 Depois, dentro do seu loop, use o seguinte código:
 ```
 AtModem::StateMachineRun ();
-enMyEvent = StackEnum::Get();
-StatusRecebido( enMyEvent );
+lenMyEvent = StackEnum::Get();
+StatusRecebido( lenMyEvent );
 ```
 
 
@@ -365,6 +422,7 @@ Você só será um programador quando seus erros forem fáceis de corrigir e seu
 Não se julgue um bom programador. Você ainda está vivo e pode fazer melhor;
 
 Programação de verdade vai muito além de fazer funcionar. É necessário fazer funcionar da maneira certa e realmente saber o que está fazendo. Programação é uma ciência exata e não tem espaço para "eu acho...".
+
 
 ### Licença de uso
 

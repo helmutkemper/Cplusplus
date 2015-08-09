@@ -395,6 +395,8 @@ void StatusRecebido ( Event::eEvent aenStatus )
 Dentro do seu código, crie a variável de evento.
 ```
 Event::eEvent enMyEvent;
+
+// Event::eEvent vem da classe.
 ```
 
 Depois, dentro do seu loop, use o seguinte código:

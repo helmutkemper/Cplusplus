@@ -434,16 +434,16 @@ void setup() {
   Serial.begin ( 115200 );
 }
 void loop() {
-    Serial2.begin ( baud[ i ] );
-    Serial.println ( baud[ i ] );
-    Serial2.write ( "AT+IPR=115200\r\n" );
-    delay ( 5000 );
-    i++;  
-    if ( baud[ i ] == 0 )
-    {
-        Serial.write ("fim!");
-        while(true);
-    }
+  Serial2.begin ( baud[ i ] );
+  Serial.println ( baud[ i ] );
+  Serial2.write ( "AT+IPR=115200\r\n" );
+  delay ( 5000 );
+  i++;  
+  if ( baud[ i ] == 0 )
+  {
+    Serial.write ("fim!");
+    while(true);
+  }
 }
 ```
 

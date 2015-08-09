@@ -294,254 +294,308 @@ extern "C"
 
 class AtModem
 {
-public:
+  public:
 
-  #ifdef I_NEED_RTC_FUNCTIONS
-    static const char kSendRtc[];
-    static const char *pSendRtc;
-    static const char kReceiveCclk[];
-    static const char kSendCclk[];
-    static const char *pCclk;
-    void static RtcSet ();
-    void static RtcGet ();
-  #endif
+    #ifdef I_NEED_RTC_FUNCTIONS
+      /** Ajusta o RTC do modem ( Real Time Clock ).
+       * Exemplo: AT+CCLK ="12/12/26,15:04:50+08"\r\n\0
+       */
+      static const char kSendRtc[];
 
-  #ifdef I_NEED_POWER_DOWN_FUNCTIONS
-    static const char kSendPowerDown[];
-    static const char kReceivePowerOn[];
-    static const char kReceiveNormalPowerDown[];
-    static const char *pNormalPowerDown;
-    static const char *pReceivePowerOn;
-    void static PowerDown ();
-    void static OnModemPowerOn ();
-  #endif
+      /** Ponteiro para a string do RTC ( Real Time Clock )
+       *
+       */
+      static const char *pSendRtc;
 
-  #ifdef I_NEED_SIM_PIN_FUNCTIONS
-    static const char kSendSinStatus[];
-    static const char kSendSinPinUnlock[];
-    static const char kSendSinPinLock[];
-    static const char kSendSinPinChange[];
-    static const char kSendSinPinEnter[];
-    static const char kReceiveSimReady[];
-    static const char kReceiveSimPin[];
-    static const char kReceiveSimPuk[];
-    static const char kReceiveSimPhPin[];
-    static const char kReceiveSimPhPuk[];
-    static const char *pReceiveSimReady;
-    static const char *pReceiveSimPin;
-    static const char *pReceiveSimPuk;
-    static const char *pReceiveSimPhPin;
-    static const char *pReceiveSimPhPuk;
-    void static SimStatus ();
-    void static SimEnterPin ();
-    void static SimLockByPin ();
-    void static SimUnlockByPin ();
-    void static SimChangePin ();
-  #endif
+      /** Resposta do RTC do modem ( Real Time Clock )
+       * Exemplo: +CCLK: "00/01/01,03:58:08+00"\r\n
+       */
+      static const char kReceiveCclk[];
 
-  #ifdef I_NEED_USE_INTERNET_FUNCTIONS
-    static const char kSendIpSingle[];
-    static const char kSendIpModeNormal[];
-    static const char kSendDeactiveGprsDpd[];
-    static const char kSendConnectHost[];
-    static const char kSendStartSendData[];
-    static const char kSendHeaderGetSend[];
-    static const char kSendInternetDns[];
-    static const char kSendInternetConnect[];
-    static const char kSendInternerConnectPassword[];
-    static const char kReceiveDeactiveGprsDpdOk[];
-    static const char kReceiveContentLength[];
-    static const char kReceiveHeaderGetSend[];
-    static const char kReceiveConnectHost[];
-    static const char kReceiveClose[];
-    static const char kReceiveClosed[];
-    static const char kReceiveConnectionFailed1[];
-    static const char kReceiveConnectionFailed2[];
-    static const char *pReceiveDeactiveGprsDpdOk;
-    static const char *pClose;
-    static const char *pClosed;
-    static const char *pConnectionFailed1;
-    static const char *pConnectionFailed2;
-    static const char *pContentLength;
-    static const char *pHeaderGetSend;
-    static int siContentLength;
-    void static DisconnectToHost ();
-    void static DisconnectAfterError ();
-    void static SendDataByGet ();
-  #endif
+      /** Comando de leitura do RTC ( Real Time Clock )
+       * AT+CCLK?\r\n\0
+       */
+      static const char kSendCclk[];
+      static const char *pCclk;
 
-  #ifdef I_NEED_SMS_FUNCTIONS
-    static const char kSendSmsTextMode[];
-    static const char kSendSmsSendConfig[];
-    static const char kSendSmsSendText[];
-    static const char kSendSmsReadMessageId[];
-    static const char kSendSmsReadMessageStatus[];
-    static const char kSendSmsDeleteMessageId[];
-    static const char kSendSmsDeleteMessageStatus[];
-    static const char kSendSmsAdvancedMode[];
-    static const char kReceiveCmti[];
-    static const char kReceiveOkEndMessage[];
-    static const char kReceiveCmgl[];
-    static const char kReceiveCmgr[];
-    static const char kReceiveCmt[];
-    static const char *pOkEndMessage;
-    static const char *pCmti;
-    static const char *pCmgl;
-    static const char *pCmgr;
-    static const char *pReceiveCmt;
-    void static SmsSend ();
-    void static SmsReadById ();
-    void static SmsReadByStatus ();
-    void static SmsReadAndDeleteById ();
-    void static SmsDeleteById ();
-    void static SmsDeleteByStatus ();
-  #endif
+      /** Função para ajustar o RTC ( Real Time Clock )
+       * \@code
+          AtModem::pDataList[ 0 ] = &chaDate[ 0 ];     // Formato: YY/MM/DD\0 Exemplo: 15/12/30\0
+          AtModem::pDataList[ 1 ] = &chaTime[ 0 ];     // Formato: hh:mm:ss\0 Exemplo: 10:31:55\0
+          AtModem::pDataList[ 2 ] = &chaTimeZone[ 0 ]; // Formato: {+|-}NN\0  Exemplo: -03\0
+          AtModem::RtcSet ();
+       * \@endcode
+       */
+      void static RtcSet ();
 
-  //#if defined I_NEED_CALL_FUNCTIONS || defined I_NEED_USE_INTERNET_FUNCTIONS
-    static const char kReceiveSmsTextRedyToSend[];
-    char static DayOfWeek (char *apchDay );
-  //#endif
+      /** Função para leitura do RTC ( Real Time Clock )
+       * \@code
+          AtModem::pDataList[ 0 ] = &chaDate[ 0 ];
+          AtModem::pDataList[ 1 ] = &chaTime[ 0 ];
+          AtModem::pDataList[ 2 ] = &chaTimeZone[ 0 ];
+          AtModem::RtcGet();
+       * \@endcode
+       */
+      void static RtcGet ();
+    #endif
 
-  #ifdef I_NEED_CALL_FUNCTIONS
-    static const char kSendDialNumberInVoiceMode[];
-    static const char kSendHangUpInVoiceMode[];
-    static const char kSendAnsweringInVoiceMode[];
-    static const char kReceiveNoCarrier[];
-    static const char kReceiveNoDialTone1[];
-    static const char kReceiveNoDialTone2[];
-    static const char kReceiveNoAnswer[];
-    static const char kReceiveBusy[];
-    static const char kReceiveRingString[];
-    static const char kReceiveCarrierNumber[];
-    static const char kSendCarrierNumber[];
-    static const char *pRingString;
-    static const char *pNoCarrier;
-    static const char *pError;
-    static const char *pNoDialTone1;
-    static const char *pNoDialTone2;
-    static const char *pNoAnswer;
-    static const char *pBusy;
-    static const char *pCarrierNumber;
-    void static CallDial ();
-    void static CallHangUp ();
-    void static CallAnswering ();
-    void static CallGetNumber ();
-  #endif
+    #ifdef I_NEED_POWER_DOWN_FUNCTIONS
+      /** Envia o comando de power down do modem
+       *  Exemplo: AT+CPOWD=1\r\n\0
+       */
+      static const char kSendPowerDown[];
 
-  #ifdef I_NEED_ROOT_FUNCTIONS
-    static const char kReceiveRootNumberEnable[];
-    static const char *pReceiveRootNumberEnable;
+      /** Recebimento do power on do modem.
+       *  Este é o único indicador dos comandos AT, no modem usado para teste, que usa a tabela ASCII
+       *  Exemplo: 0x49494949FEFEFEFE\0
+       */
+      static const char kReceivePowerOn[];
+      static const char *pReceivePowerOn;
 
-    static const char kReceiveRootNumberDisable[];
-    static const char *pReceiveRootNumberDisable;
+      /** Recebimento de indicador de power down.
+       *  Exemplo: \r\nNORMAL POWER DOWN\r\n\0
+       *  Na prática do modem usado para teste, ele começa e termina com \r\n.
+       */
+      static const char kReceiveNormalPowerDown[];
+      static const char *pNormalPowerDown;
 
-    static const char kReceiveRootNumberAddPhoneBook[];
-    static const char *pReceiveRootNumberAddPhoneBook;
+      /** Desliga o modem.
+       *
+       */
+      void static PowerDown ();
 
-    static const char kReceiveRootNumberDelPhoneBook[];
-    static const char *pReceiveRootNumberDelPhoneBook;
+      /** Configura o modem com os comandos básicos de uso assim que o modem fica ativo.
+       *
+       */
+      void static OnModemPowerOn ();
+    #endif
 
-    static const char kRootName[];
-    static const char *pRootName;
+    #ifdef I_NEED_SIM_PIN_FUNCTIONS
+      static const char kSendSinStatus[];
+      static const char kSendSinPinUnlock[];
+      static const char kSendSinPinLock[];
+      static const char kSendSinPinChange[];
+      static const char kSendSinPinEnter[];
+      static const char kReceiveSimReady[];
+      static const char kReceiveSimPin[];
+      static const char kReceiveSimPuk[];
+      static const char kReceiveSimPhPin[];
+      static const char kReceiveSimPhPuk[];
+      static const char *pReceiveSimReady;
+      static const char *pReceiveSimPin;
+      static const char *pReceiveSimPuk;
+      static const char *pReceiveSimPhPin;
+      static const char *pReceiveSimPhPuk;
+      void static SimStatus ();
+      void static SimEnterPin ();
+      void static SimLockByPin ();
+      void static SimUnlockByPin ();
+      void static SimChangePin ();
+    #endif
 
-    static void SetRootPhoneBook ();
-    static void ClearRootPhoneBook ();
-  #endif
+    #ifdef I_NEED_USE_INTERNET_FUNCTIONS
+      static const char kSendIpSingle[];
+      static const char kSendIpModeNormal[];
+      static const char kSendDeactiveGprsDpd[];
+      static const char kSendConnectHost[];
+      static const char kSendStartSendData[];
+      static const char kSendHeaderGetSend[];
+      static const char kSendInternetDns[];
+      static const char kSendInternetConnect[];
+      static const char kSendInternerConnectPassword[];
+      static const char kReceiveDeactiveGprsDpdOk[];
+      static const char kReceiveContentLength[];
+      static const char kReceiveHeaderGetSend[];
+      static const char kReceiveConnectHost[];
+      static const char kReceiveClose[];
+      static const char kReceiveClosed[];
+      static const char kReceiveConnectionFailed1[];
+      static const char kReceiveConnectionFailed2[];
+      static const char *pReceiveDeactiveGprsDpdOk;
+      static const char *pClose;
+      static const char *pClosed;
+      static const char *pConnectionFailed1;
+      static const char *pConnectionFailed2;
+      static const char *pContentLength;
+      static const char *pHeaderGetSend;
+      static int siContentLength;
+      void static DisconnectToHost ();
+      void static DisconnectAfterError ();
+      void static SendDataByGet ();
+    #endif
 
-  #ifdef I_NEED_GEO_FUNCTIONS
-    static const char kSendEnginneringModeOn[];
-    static const char kSendEnginneringGet[];
-    static const char kReceiveEnginneringModeData[];
-    static const char *pReceiveEnginneringModeData;
-    static void GetEnginneringData ();
-  #endif
+    #ifdef I_NEED_SMS_FUNCTIONS
+      static const char kSendSmsTextMode[];
+      static const char kSendSmsSendConfig[];
+      static const char kSendSmsSendText[];
+      static const char kSendSmsReadMessageId[];
+      static const char kSendSmsReadMessageStatus[];
+      static const char kSendSmsDeleteMessageId[];
+      static const char kSendSmsDeleteMessageStatus[];
+      static const char kSendSmsAdvancedMode[];
+      static const char kReceiveCmti[];
+      static const char kReceiveOkEndMessage[];
+      static const char kReceiveCmgl[];
+      static const char kReceiveCmgr[];
+      static const char kReceiveCmt[];
+      static const char *pOkEndMessage;
+      static const char *pCmti;
+      static const char *pCmgl;
+      static const char *pCmgr;
+      static const char *pReceiveCmt;
+      void static SmsSend ();
+      void static SmsReadById ();
+      void static SmsReadByStatus ();
+      void static SmsReadAndDeleteById ();
+      void static SmsDeleteById ();
+      void static SmsDeleteByStatus ();
+    #endif
 
-  #ifdef I_NEED_QUALITY_FUNCTIONS
-    static const char kReceiveSignalQuality[];
-    static const char kSendSignalQuality[];
-    static const char *pSignalQuality;
-    void static SignalQuality ();
-  #endif
+    //#if defined I_NEED_CALL_FUNCTIONS || defined I_NEED_USE_INTERNET_FUNCTIONS
+      static const char kReceiveSmsTextRedyToSend[];
+      char static DayOfWeek (char *apchDay );
+    //#endif
 
-  #ifdef I_NEED_PHONEBOOK_FUNCTIONS
-    static const char kReceivePhoneBookFind[];
-    static const char kSendPhoneBookClearId[];
-    static const char kSendPhoneBookWriteId[];
-    static const char kSendPhoneBookWrite[];
-    static const char kSendPhoneBookFind[];
+    #ifdef I_NEED_CALL_FUNCTIONS
+      static const char kSendDialNumberInVoiceMode[];
+      static const char kSendHangUpInVoiceMode[];
+      static const char kSendAnsweringInVoiceMode[];
+      static const char kReceiveNoCarrier[];
+      static const char kReceiveNoDialTone1[];
+      static const char kReceiveNoDialTone2[];
+      static const char kReceiveNoAnswer[];
+      static const char kReceiveBusy[];
+      static const char kReceiveRingString[];
+      static const char kReceiveCarrierNumber[];
+      static const char kSendCarrierNumber[];
+      static const char *pRingString;
+      static const char *pNoCarrier;
+      static const char *pError;
+      static const char *pNoDialTone1;
+      static const char *pNoDialTone2;
+      static const char *pNoAnswer;
+      static const char *pBusy;
+      static const char *pCarrierNumber;
+      void static CallDial ();
+      void static CallHangUp ();
+      void static CallAnswering ();
+      void static CallGetNumber ();
+    #endif
 
-    static const char *pReceivePhoneBookFind;
+    #ifdef I_NEED_ROOT_FUNCTIONS
+      static const char kReceiveRootNumberEnable[];
+      static const char *pReceiveRootNumberEnable;
 
-    void static PhoneBookSet ();
-    void static PhoneBookIdSet ();
-    void static PhoneBookClearId ();
-    void static PhoneBookFind ();
-    void static PhoneBookFindId ();
-  #endif
+      static const char kReceiveRootNumberDisable[];
+      static const char *pReceiveRootNumberDisable;
 
-  static StatusModem StatusEvent;
-  static ExternalDataModem DataSendEvent;
-  static ExternalDataModem DataReceivedEvent;
+      static const char kReceiveRootNumberAddPhoneBook[];
+      static const char *pReceiveRootNumberAddPhoneBook;
 
-  static eStep EnumStep;
-  static eEvent EnumEvent;
+      static const char kReceiveRootNumberDelPhoneBook[];
+      static const char *pReceiveRootNumberDelPhoneBook;
 
-  static bool gblInternetConnect;
+      static const char kRootName[];
+      static const char *pRootName;
 
-  static char *pchSmsNew;
-  static char *pchSmsNewOriginal;
-  static char *pchCmtPhone;
-  static char *pchCmtPhoneOriginal;
-  static char *pchCmtDay;
-  static char *pchCmtDayOriginal;
-  static char *pchCmtTime;
-  static char *pchCmtTimeOriginal;
-  static char *pchCmtMessage;
-  static char *pchCmtMessageOriginal;
+      static void SetRootPhoneBook ();
+      static void ClearRootPhoneBook ();
+    #endif
 
-  static char *pchTmpValue;
-  static char **ppchTmpAddr;
+    #ifdef I_NEED_GEO_FUNCTIONS
+      static const char kSendEnginneringModeOn[];
+      static const char kSendEnginneringGet[];
+      static const char kReceiveEnginneringModeData[];
+      static const char *pReceiveEnginneringModeData;
+      static void GetEnginneringData ();
+    #endif
 
-  static char *pDataList[];//20
+    #ifdef I_NEED_QUALITY_FUNCTIONS
+      static const char kReceiveSignalQuality[];
+      static const char kSendSignalQuality[];
+      static const char *pSignalQuality;
+      void static SignalQuality ();
+    #endif
 
-  static const char *pOriginal;
-  static const char *pCallReady;
+    #ifdef I_NEED_PHONEBOOK_FUNCTIONS
+      static const char kReceivePhoneBookFind[];
+      static const char kSendPhoneBookClearId[];
+      static const char kSendPhoneBookWriteId[];
+      static const char kSendPhoneBookWrite[];
+      static const char kSendPhoneBookFind[];
 
-  static const char *pDataTxToModem[];//13
-  static const char *pDataRxToModem[];//13
+      static const char *pReceivePhoneBookFind;
 
-  static int siDataListLine;
-  static int siDataTxPointerLine;
-  static int siDataRxPointerLine;
-  static int siGenericCounter;
+      void static PhoneBookSet ();
+      void static PhoneBookIdSet ();
+      void static PhoneBookClearId ();
+      void static PhoneBookFind ();
+      void static PhoneBookFindId ();
+    #endif
 
-  static char schFlags;
+    static StatusModem StatusEvent;
+    static ExternalDataModem DataSendEvent;
+    static ExternalDataModem DataReceivedEvent;
 
-  static const char kSendEchoOff[];
-  static const char kSendEchoOn[];
-  static const char kReceiveCallReady[];
-  static const char kReceiveOk[];
-  static const char kReceiveError[];
+    static eStep EnumStep;
+    static eEvent EnumEvent;
 
-  AtModem();
-  void static Init ();
-  bool static __GetTest( const char **apcchPointer, const char *apcchPointerStart, char achRx, Event::eEvent e );
-  void static Get ( char achChar );
-  void static FlagSet ( char achFlag );
-  void static FlagClear ( char achFlag );
-  bool static FlagTest ( char achFlag );
-  void static ConstCharToChar ( const char *p1, char *p2 );
-  void static ConstCharToChar ( char *p1, char *p2 );
-  void static ResetPointers ();
-  void static OnEvent ( eEvent aenEvent );
-  void static EchoOn ();
-  void static EchoOff ();
-  void static StateMachine ();
-  void static StateMachineRun ();
-  void static StateMachineResetAndRun ();
-  void static PontSecuryCopy ( char **pchOriginal, char **pchNew );
-  void static PointReturnAfterSecuryCopy ();
-  void static Checker ( const char *apcchPointer, char *apchRx, Event::eEvent e );
+    static bool gblInternetConnect;
+
+    static char *pchSmsNew;
+    static char *pchSmsNewOriginal;
+    static char *pchCmtPhone;
+    static char *pchCmtPhoneOriginal;
+    static char *pchCmtDay;
+    static char *pchCmtDayOriginal;
+    static char *pchCmtTime;
+    static char *pchCmtTimeOriginal;
+    static char *pchCmtMessage;
+    static char *pchCmtMessageOriginal;
+
+    static char *pchTmpValue;
+    static char **ppchTmpAddr;
+
+    static char *pDataList[];//20
+
+    static const char *pOriginal;
+    static const char *pCallReady;
+
+    static const char *pDataTxToModem[];//13
+    static const char *pDataRxToModem[];//13
+
+    static int siDataListLine;
+    static int siDataTxPointerLine;
+    static int siDataRxPointerLine;
+    static int siGenericCounter;
+
+    static char schFlags;
+
+    static const char kSendEchoOff[];
+    static const char kSendEchoOn[];
+    static const char kReceiveCallReady[];
+    static const char kReceiveOk[];
+    static const char kReceiveError[];
+
+    AtModem();
+    void static Init ();
+    bool static __GetTest( const char **apcchPointer, const char *apcchPointerStart, char achRx, Event::eEvent e );
+    void static Get ( char achChar );
+    void static FlagSet ( char achFlag );
+    void static FlagClear ( char achFlag );
+    bool static FlagTest ( char achFlag );
+    void static ConstCharToChar ( const char *p1, char *p2 );
+    void static ConstCharToChar ( char *p1, char *p2 );
+    void static ResetPointers ();
+    void static OnEvent ( eEvent aenEvent );
+    void static EchoOn ();
+    void static EchoOff ();
+    void static StateMachine ();
+    void static StateMachineRun ();
+    void static StateMachineResetAndRun ();
+    void static PontSecuryCopy ( char **pchOriginal, char **pchNew );
+    void static PointReturnAfterSecuryCopy ();
+    void static Checker ( const char *apcchPointer, char *apchRx, Event::eEvent e );
 };
 
 #endif // ATMODEM_H

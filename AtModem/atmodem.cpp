@@ -831,10 +831,8 @@ const char *AtModem::pCallReady = &AtModem::kReceiveCallReady[ 0 ];
 
   const char *AtModem::pSendRtc = &AtModem::kSendRtc[ 0 ];
 
-  //AT+CCLK ="12/12/26,15:04:50+08"
   const char AtModem::kSendRtc[] = { "AT+CCLK=\"{pt},{pt}{pt}\"\r\n\0" };
 
-  //+CCLK: "00/01/01,03:58:08+00"\r\n
   const char AtModem::kReceiveCclk[] = { "+CCLK: \"{time},{time}{snum}\0" };
   const char *AtModem::pCclk = &AtModem::kReceiveCclk[ 0 ];
 

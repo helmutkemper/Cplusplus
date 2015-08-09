@@ -447,6 +447,10 @@ void loop() {
 }
 ```
 
+Explicação do terceiro problema
+
+Segundo o fabricante, o modem aceita trabalhar nas velocidades 1200, 2400, 4800, 9600, 19200, 38400, 57600 e 115200. Tudo o que o código faz é enviar o comando "AT+IPR=115200" e colocar o modem para trabalhar a 115200bps.
+
 
 #### Restaure o adaptador Bluetooth
 

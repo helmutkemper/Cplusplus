@@ -14,24 +14,24 @@ O lado ruim do Arduino:
 2. Tem pouca memória;
 3. As classes prontas não são eficientes na utilização de memória.
 
-Antes de continuar entenda o fato de não existir um hardware Arduino, o que existe de verdade é um hardware AVR seguindo os padrões do projeto Arduino. Você deve ter a capacidade de saber a diferença e poder separar as duas coisas.
+Antes de continuar entenda o fato de não existir um hardware Arduino, o que existe de verdade é um projeto baseado no uC AVR da Atmel, seguindo os padrões do projeto de nome Arduino. Você deve ter a capacidade de saber a diferença e poder separar as duas coisas.
 
 As três fraquezas citadas acima são suas melhores amigas para se tornar um programador melhor. Aprenda a fazer um código leve, eficiente e com baixo consumo de memória para rodar em um Arduino barato e você poderá rodar em qualquer plataforma existente no mercado com folga.
 
 Por isto, saia da sua zona de conforto e vá procurar a dificuldade. Ela é sua amiga e te ajuda a transformar fraqueza em força.
 
-Muitos vão falar mal do Arduino e de C/C++ e vão partir para linguagens de programação que são basicamente um framework pronto. Cuidado com isto. Antes de partir para está abordagem se lembre de duas regras simples:
+Muitos vão falar mal do Arduino e de C/C++ e vão partir para linguagens de programação que são basicamente um framework pronto. Cuidado com isto. Antes de partir para esta abordagem, lembre-se de duas regras simples:
 
 1. Você já tem capacidade de fazer do zero e só está ganhando tempo?
-2. A linguagem escolhida é a melhor para o projeto ou para você? Por exemplo, pyton é mais fácil do que C/C++, porém, é 100x mais lento e requer a instalação de uma máquina virtual para rodar.
+2. A linguagem escolhida é a melhor para o projeto ou para você? Por exemplo, Python é mais fácil do que C/C++, porém, é 100x mais lento e requer a instalação de uma máquina virtual para rodar.
 
 ### Dicas de programação.
 
-Quando se trabalha com com C++ para hardware deve-se tomar cuidado no uso excessivo de ponteiros para a inicialização de classes, por isto, a maioria das classes são estáticas. Isto poupa memória e tempo de execução.
+Quando se trabalha com com C++ para hardware deve-se tomar cuidado no uso excessivo de ponteiros para a inicialização de classes, por isto, a maioria das classes são estáticas. Isto poupa memória e tempo de execução. Mas, quando criar os ponteiros, lembre-se de os destruir ao final do uso.
 
 Uma outra coisa muito importante é o fato de você necessitar criar funções externas a classe sempre que uma função específica do hardware for usada.
 
-Na prática, o código fica dividido em camadas, como na orientação a objeto, porém, a sua classe genérica nunca conterá acesso direto ao hardware ou configuração específica do mesmo. Quando isto for necessário você deve criar um ponteiro de função e fazer a sua classe genérica chamar uma função externa com esta finalidade.
+Na prática, o código fica dividido em camadas, como na orientação a objeto, porém, a sua classe genérica nunca conterá acesso direto ao hardware ou configurações específicas do mesmo. Quando isto for necessário, você deve criar um ponteiro de função e fazer a sua classe genérica chamar uma função externa com esta finalidade.
 
 Por isto é comum em minhas classes haver o uso de ponteiros para funções como no exemplo abaixo.
 
@@ -46,44 +46,55 @@ extern "C"
 
 Caso você não esteja familiarizado com este tipo de construção da linguagem, por favor, pare e estude sobre isto antes de continuar. É de vital importância o entendimento da construção de ponteiros para se trabalhar bem com hardware.
 
-Ao contrário do que diz a lenda sobre ponteiros, eles não são complicados de serem usados e ajudam a poupar tempo de processamento e memória do hardware. Fazendo com que sua compreensão seja de vital importância para qualquer programador de hardware.
+Ao contrário do que diz a lenda sobre ponteiros, eles não são complicados de serem usados e ajudam a poupar tempo de processamento e memória do hardware. Fazendo com que sua compreensão seja de vital importância para qualquer programador de hardware, por isto, pare e pratique o uso de ponteiros até realmente entender o que está fazendo e deixe as lendas de lado.
+
+Lembre-se, você está trabalhando com exatas e não há espaço para lendas ou achismos, ou você sabe, ou você deve estudar mais.
 
 ### Máquinas de estados finitos:
 
-Máquina de estados é um excelente forma de manter o código organizado, principalmente quando o código é complexo e necessita de muitas etapas a serem cumpridas antes de uma tarefa ser executada. Por isto, muitos códigos que trabalham com dispositivos seriais são baseados em máquinas de estado e a conclusão das tarefas gera um evento.
+Máquina de estados é uma excelente forma de manter o código organizado, principalmente quando o código é complexo e necessita de muitas etapas a serem cumpridas antes de uma tarefa ser executada. Por isto, muitos códigos que trabalham com dispositivos seriais são baseados em máquinas de estado e a conclusão das tarefas gera um evento.
 
-Por padrão, eu costumo usar enumerador para eventos e o mesmo costuma ficar dentro do namespace Event e são processados pela função Classe::OnEvent().
+Por padrão, eu costumo usar enumerador para eventos e o mesmo costuma ficar dentro do namespace Event e são processados pelo método NomeDaClasse::OnEvent().
 
-Porém, não encare a máquina de estados como solução final para tudo, ela organiza muito bem o código, mas, ela requer memória e tempo de processamento. Por isto, use com sabedoria.
+Não encare a máquina de estados como solução final para tudo, ela organiza muito bem o código, mas, ela requer memória e tempo de processamento. Por isto, use com sabedoria.
+
+Quando usar máquinas de estados:
+
+Em alguns tipos de aplicações, geralmente com dispositivos baseados em porta serial, os eventos acontecem de forma assíncrona e a velocidade dos dados de entrada é infinitamente baixa em relação a velocidade de processamento da plataforma, assim a máquina de estados deixa a plataforma livre para trabalhar enquanto o dado esperado não chega por completo. A outra funcionalidade dela é arquivar uma lista de passos a serem executados para se cumprir uma tarefa.
+ 
+Nesse ponto, imagine um modem GPRS executado um programa controlado por SMS para interagir com o usuário. O protocolo do modem baseado em comandos AT necessita passar uma série de comandos, e a cada comando dado o mesmo deve responder algo antes do próximo comando ser enviado. Assim, há uma lista de passos a serem executados antes de um SMS ser enviado ou lido e a máquina de estados é excelente para organizar o código e deixar a plataforma livre para outras tarefas enquanto processa as necessidades do protocolo do modem. 
 
 Como usar a máquina de estados:
 
-A máquina de estados do código foi feita para trabalhar com comandos AT, onde uma string formatada é enviada e recebida o tempo todo para cada comando e você deve ter isto em mente na hora do uso.
+A máquina de estados do código foi feita para trabalhar com o envio e recebimento de strings fixas, onde uma string formatada é enviada e recebida o tempo todo para cada comando e você deve ter isto em mente na hora do uso.
 
-Por uma simples questão de memória RAM e tempo de processamento, o código não arquiva nada que chegou para depois tratar. Ele varre uma série de ponteiros e compara o que chegou com o esperado e executa uma ação quando algo bate.
+Por uma simples questão de memória RAM e tempo de processamento, o código não arquiva nada que chega para depois tratar. Ele varre uma série de ponteiros e compara o que chegou com o esperado e executa uma ação quando algo bate.
 
 Por isto, você necessita criar constantes com o texto procurado e um ponteiro individual para cada texto procurado.
 
 ```
-1. Crie as constantes a serem enviadas por serial na forma de constante de array de char, assim:
+// 1. Crie as constantes a serem enviadas por porta serial na forma de constante de array de char, assim:
+// Descrição: +CMTI - New message indication
+// Formato: +CMTI: "SM",n°\r\n
+// pSMS foi criado dentro da classe para arquivar o id do SMS recebido.
 const char AtModem::kReceiveCmti[] = { "+CMTI: \"SM\",{pSMS}\0" };
-2. Crie um ponteiro para o início da string a ser enviada.
+// 2. Crie um ponteiro para o início da string a ser enviada.
 const char *AtModem::pReceiveCmt = &AtModem::kReceiveCmt[ 0 ];
 ```
 
 Repita os passos acima para cada comando necessário. Em seguida, crie uma função para disparar a lista de comandos necessários para a tarefa.
 
 ```
-1. Crie uma função
+// 1. Crie uma função
 void AtModem::SmsSend ()
 {
-  2. Adicione um ponteiro para o primeiro comando a ser enviado pela porta serial
+  // 2. Adicione um ponteiro para o primeiro comando a ser enviado pela porta serial
   AtModem::pDataTxToModem[ 0 ] = &AtModem::kSendEchoOff[ 0 ];
-  3. Adicione a resposta esperada.
+  // 3. Adicione a resposta esperada.
   AtModem::pDataRxToModem[ 0 ] = &AtModem::kReceiveOk[ 0 ];
 
-  4. Repita os passos quantas vezes por necessário.
-  5. Caso não seja necessário esperar uma resposta, coloque 0x00 em Rx.
+  // 4. Repita os passos quantas vezes por necessário.
+  // 5. Caso não seja necessário esperar uma resposta, coloque 0x00 em Rx.
   AtModem::pDataTxToModem[ 1 ] = &AtModem::kSendSmsTextMode[ 0 ];
   AtModem::pDataRxToModem[ 1 ] = &AtModem::kReceiveOk[ 0 ];
 
@@ -96,14 +107,15 @@ void AtModem::SmsSend ()
   AtModem::pDataTxToModem[ 4 ] = &AtModem::kSendEchoOff[ 0 ];
   AtModem::pDataRxToModem[ 4 ] = &AtModem::kReceiveOk[ 0 ];
 
-  6. Deixe os ponteiros do último estágio com o valor 0x00 OBRIGATORIAMENTE!
+  // 6. Deixe os ponteiros do último estágio com o valor 0x00 OBRIGATORIAMENTE!
   AtModem::pDataTxToModem[ 5 ] = '\0';
   AtModem::pDataRxToModem[ 5 ] = '\0';
 
-  7. Ligue a máquina.
+  // 7. Limpe e ligue a máquina de estados.
   AtModem::StateMachineResetAndRun ();
 }
 ```
+
 Para os comandos de envio, use:
 
 1. {pt}  - Ponteiro de onde os dados estão
@@ -119,6 +131,11 @@ Para os dados recebidos use:
 6. {str}  - Captura texto, formato: [0-9a-z(sp)]{1,}
 7. {istr} - Ignora texto, formato: [^0-9a-z(sp)]{1,}
 8. {all}  - Captura tudo, formato: [^\r\n\0]
+9. {pSMS} - Ponteiro da classe que aponta para o id do SMS recebido
+10. {pSMG} - Ponteiro da classe que aponta para a mensagem recebida
+11. {pTME} - Ponteiro da classe que aponta para a hora do SMS
+12. {pDAY} - Ponteiro da classe que aponta para a data do SMS
+13. {pPHO} - Ponteiro da classe que aponta para o número do telefone do SMS
 
 #### Exemplos de uso 1:
 ```

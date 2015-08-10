@@ -404,27 +404,71 @@ class AtModem
        *  Exemplo: +CPIN: READY\r\n\0
        */
       static const char kReceiveSimReady[];
+      static const char *pReceiveSimReady;
 
       /** Constante SIM Card espera o PIN ( Personal Identification Number )
        *  Exemplo: +CPIN: SIM PIN\r\n\0
        */
       static const char kReceiveSimPin[];
+      static const char *pReceiveSimPin;
 
       /** Constante SIM Card espera o PUK ( PIN Unlock Key )
        *  Exemplo: +CPIN: SIM PUK\r\n\0
        */
       static const char kReceiveSimPuk[];
-      static const char kReceiveSimPhPin[];
-      static const char kReceiveSimPhPuk[];
-      static const char *pReceiveSimReady;
-      static const char *pReceiveSimPin;
       static const char *pReceiveSimPuk;
+
+      /** Constante SIM Card espera do Phone PIN
+       *  Exemplo: +CPIN: PH_SIM PIN\r\n\0
+       */
+      static const char kReceiveSimPhPin[];
       static const char *pReceiveSimPhPin;
+
+      /** Constante SIM Card espera do Phone PUK
+       *  Exemplo: +CPIN: PH_SIM PUK\r\n\0
+       */
+      static const char kReceiveSimPhPuk[];
       static const char *pReceiveSimPhPuk;
+
+      /** Lê o status do SIM Card
+       *
+       */
       void static SimStatus ();
+
+      /** Envia o PIN para o SIM Card
+       *  \@code
+          AtModem::pDataList[ 0 ] = &gchaSinPin[ 0 ]; // gchaSinPin = { "1234\0" };
+          AtModem::SimEnterPin();
+          \@endcode
+       */
       void static SimEnterPin ();
+
+      /** Envia um PIN para travar o SIM Card.
+       *  Esta função deve ser usada assim que o modem liga.
+       *  \@code
+          AtModem::pDataList[ 0 ] = &gchaSinPin[ 0 ]; // gchaSinPin = { "1234\0" };
+          AtModem::SimLockByPin ();
+          \@endcode
+       */
       void static SimLockByPin ();
+
+      /** Envia um PIN para destravar a necessidade do SIM Card.
+       *  Esta função deve ser usada assim que o modem liga.
+       *  \@code
+          AtModem::pDataList[ 0 ] = &gchaSinPin[ 0 ]; // gchaSinPin = { "1234\0" };
+          AtModem::SimUnlockByPin ();
+          \@endcode
+       */
       void static SimUnlockByPin ();
+
+      /** Envia o PIN antigo e o novo para a troca do PIN.
+       *  Esta função deve ser usada assim que o modem liga.
+       *  \@code
+          AtModem::pDataList[ 0 ] = &gchaSinPin[ 0 ];
+          AtModem::pDataList[ 1 ] = &gchaSinNewPin[ 0 ];
+          AtModem::SimChangePin ();
+          \@endcode
+       */
       void static SimChangePin ();
     #endif
 

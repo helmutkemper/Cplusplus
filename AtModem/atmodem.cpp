@@ -1,7 +1,7 @@
 #include <QDebug>
 
 #include "atmodem.h"
-#include "stackenum.h"
+#include "../stateMachine/stackenum.h"
 
 bool AtModem::gblInternetConnect = false;
 

@@ -1,5 +1,5 @@
 #include "stackenum.h"
-#include "atmodem.h"
+#include "../AtModem/atmodem.h"
 
 // Inicializa a lista de eventos da máquina de estados.
 Event::eEvent StackEnum::eaEventList[ kDefEventListSize ];

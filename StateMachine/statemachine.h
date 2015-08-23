@@ -1,6 +1,13 @@
 #ifndef STATE_MACHINE_H
 #define STATE_MACHINE_H
 
+#define kDefFlagRuning 0
+#define kDefFlagNextStep 1
+#define kDefFlagWaiting 2
+#define kDefFlagInternetGet 3
+#define kDefFlagCheckEnd 4
+#define kDefFlagProcessEnd 5
+
 /** Quantidades de itens máximos na fila de ações
  *
  */

@@ -1,7 +1,7 @@
 #ifndef STACKENUM_H
 #define STACKENUM_H
 
-#include "atmodem.h"
+#include "../AtModem/atmodem.h"
 
 /** Quantidades de itens máximos na fila de eventos
  *

@@ -17,16 +17,16 @@ SOURCES += main.cpp\
     ../StateMachine/copy.cpp \
     ../StateMachine/stackenum.cpp \
     ../StateMachine/statemachine.cpp \
-    ../StateMachine/SendToDevice.cpp \
-    ../StateMachine/RingMemory.cpp
+    ../StateMachine/RingMemory.cpp \
+    ../SendToDevice/SendToDevice.cpp
 
 HEADERS  += MainWindow.h \
     ../AtModem/state_machine_at_modem_event_list.h \
     ../StateMachine/copy.h \
     ../StateMachine/stackenum.h \
     ../StateMachine/statemachine.h \
-    ../StateMachine/SendToDevice.h \
     ../typesKemper.h \
-    ../StateMachine/RingMemory.h
+    ../StateMachine/RingMemory.h \
+    ../SendToDevice/SendToDevice.h
 
 FORMS    += MainWindow.ui

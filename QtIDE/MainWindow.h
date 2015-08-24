@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include "../StateMachine/SendToDevice.h"
+#include "../SendToDevice/SendToDevice.h"
 
 namespace Ui {
   class MainWindow;
@@ -22,7 +22,7 @@ class MainWindow : public QMainWindow
     static const char text2[];
     static char data[];
 
-    SendToDevice<const char, char, unsigned char, unsigned char, Event::eEvent> *sd;
+    SendToDevice<const char, char, unsigned char, unsigned char> *sd;
 
   private slots:
     void on_pushButton_clicked();

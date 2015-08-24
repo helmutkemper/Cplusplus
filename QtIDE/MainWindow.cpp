@@ -3,7 +3,7 @@
 #include "QDebug"
 #include "QTimer"
 
-#include "../StateMachine/SendToDevice.h"
+#include "../SendToDevice/SendToDevice.h"
 
 const char MainWindow::text1[] = { "Ola mundo{pt}!###\0" };
 const char MainWindow::text2[] = { "abc\0" };
@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
   pText1 = &MainWindow::text1[ 0 ];
 
-  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char, Event::eEvent>( 10, 3 );
+  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 3 );
   this->sd->setSendFunction( &MainWindow::send );
   this->sd->addPointer( 0, &MainWindow::data[ 0 ] );
   this->sd->addPointer( 1, &MainWindow::data[ 0 ] );

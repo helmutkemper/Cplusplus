@@ -60,6 +60,10 @@
  *         A classe também prevê o a necessidade de se preparar um array de char antes do envio, onde uma constate pode
  *         perfeitamente ser montada de acordo com a necessidade da operação, sem maiores problemas.
  *
+ *         Esta classe tem os seguintes templates:
+ *         template class SendToDevice<const char, char, unsigned char, unsigned char>;
+ *         template class SendToDevice<const unsigned char, unsigned char, unsigned char, unsigned char>;
+ *
  *         Boa Sorte.
  *         Kemper
  *
@@ -127,7 +131,21 @@ class SendToDevice
      *        o ponteiro variável vai varrendo a constante e quando o mesmo encontrar \0, fim  de texto, o método retorna o
      *        valor decimal 1. Qualquer valor negativo indica um erro na constante recebida.
      *
-     *        Veja o resto da documentação da classe para mais detalhe.
+     *        Este método trabalha em conjunto com o método addPointer() para permitir a captura de dados em formatos
+     *        específicos. Veja a lista abaixo.
+     *
+     *        {time} - Captura data/hora, formato: [0-9]{1,}[:/][0-9]{1,}[0-9]{1,}[:/]
+     *        {inum} - Ignora número, formato: [^0-9]{1,}
+     *        {snum} - Captura número, formato: [0-9+-]{1,}
+     *        {num}  - Captura número, formato: [0-9]{1,}
+     *        {hex}  - Captura número, formato: [0-9a-fA-F]{1,}
+     *        {str}  - Captura texto, formato: [0-9a-z(sp)]{1,}
+     *        {istr} - Ignora texto, formato: [^0-9a-z(sp)]{1,}
+     *        {all}  - Captura tudo, formato: [^\r\n\0]
+     *
+     *        Ex: Imagine o recebimento da string "+ligar luz 20\r\n"
+     *            Ela ficaria: "+ligar luz {num}\r\n"
+     *            Onde addPointer() apontaria para onde escrever o número contido na string.
      *
      * @param apcchPointer, ponteiro para a constante array de char com o texto procurado.
      *

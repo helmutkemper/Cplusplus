@@ -27,6 +27,7 @@
 #define SEND_TO_DEVICE_FLAG_WAITING 2
 #define SEND_TO_DEVICE_FLAG_CHECK_END 3
 #define SEND_TO_DEVICE_FLAG_PROCCESS_END 4
+#define SEND_TO_DEVICE_FLAG_EVENT_SEND 5
 
 /**
  *  @brief Esta classe tem a finalidade de fazer a troca de dados entre um hardware serial e um dispositivo AT, Modem e
@@ -112,6 +113,15 @@ class SendToDevice
      * @param functPointerAPFn, este é um ponteiro de função do tipo void (*p)
      */
     void setSendFunction ( PT_VOID_CH functPointerAPFn );
+    void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt );
+    void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt, unsigned int lengthAUInt );
+
+    /**
+     * @brief setOnEndFunction, recebe o ponteiro da função a ser chamada ao fim do processo de envio.
+     *
+     * @param functPointerAPFn, este é um ponteiro de função do tipo void ()
+     */
+    void setOnEndFunction ( PT_VOID_VOID functPointerAPFn );
 
     /**
      * @brief onIncomingData, Este método deve ser usado sempre que um novo dado chegar pela porta serial para que o mesmo
@@ -203,7 +213,13 @@ class SendToDevice
     bool flagTest ( char flagACh );
     void send ();
 
+    unsigned int bufferLengthCUInt;
+    unsigned int bufferLengthOriginalCUInt;
+
+    PT_VOID_VOID onEndCPFnc;
     PT_VOID_CH sendCPFnc;
+    typeDataToMountBeforeExchange *sendToData;
+    typeDataToMountBeforeExchange *sendToDataOriginal;
 
     char flagsCCh;
 

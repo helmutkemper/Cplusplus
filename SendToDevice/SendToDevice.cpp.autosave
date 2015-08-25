@@ -89,7 +89,7 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt )
 {
-  this->sendToData = toDataATplt;
+  this->sendToData         = toDataATplt;
   this->sendToDataOriginal = toDataATplt;
 }
 

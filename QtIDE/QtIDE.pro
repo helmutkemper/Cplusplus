@@ -18,7 +18,8 @@ SOURCES += main.cpp\
     ../StateMachine/stackenum.cpp \
     ../StateMachine/statemachine.cpp \
     ../StateMachine/RingMemory.cpp \
-    ../SendToDevice/SendToDevice.cpp
+    ../SendToDevice/SendToDevice.cpp \
+    FileSystem.cpp
 
 HEADERS  += MainWindow.h \
     ../AtModem/state_machine_at_modem_event_list.h \
@@ -27,6 +28,7 @@ HEADERS  += MainWindow.h \
     ../StateMachine/statemachine.h \
     ../typesKemper.h \
     ../StateMachine/RingMemory.h \
-    ../SendToDevice/SendToDevice.h
+    ../SendToDevice/SendToDevice.h \
+    FileSystem.h
 
 FORMS    += MainWindow.ui

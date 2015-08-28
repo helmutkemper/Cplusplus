@@ -16,11 +16,14 @@ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSi
   this->dataListLineCTplt   = 0;
 
   this->onEndCPFnc = 0;
+  this->onBufferFullCPFnc = 0;
   this->sendCPFnc  = 0;
+
   this->sendToData = 0;
   this->sendToDataOriginal = 0;
   this->bufferLengthCUInt = 0;
-  this->bufferLengthOriginalCUInt = 0;
+
+  this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -34,7 +37,6 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
   this->sendToData  = this->sendToDataOriginal;
   this->bufferLengthCUInt = 0;
-  this->bufferLengthOriginalCUInt = 0;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -81,6 +83,12 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setOnBufferFullFunction ( PT_VOID_VOID functPointerAPFn )
+{
+  this->onBufferFullCPFnc = functPointerAPFn;
+}
+
+template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setSendFunction ( PT_VOID_CH functPointerAPFn )
 {
   this->sendCPFnc = functPointerAPFn;
@@ -89,7 +97,7 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt )
 {
-  this->sendToData = toDataATplt;
+  this->sendToData         = toDataATplt;
   this->sendToDataOriginal = toDataATplt;
 }
 
@@ -100,7 +108,6 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
   this->sendToDataOriginal = toDataATplt;
 
   this->bufferLengthCUInt         = lengthAUInt;
-  this->bufferLengthOriginalCUInt = lengthAUInt;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -193,9 +200,23 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
         {
           *this->sendToData = dataToSendLCh;
           this->sendToData += 1;
+          *this->sendToData = 0;
 
-          //this->bufferLengthCUInt         = lengthAUInt;
-          //this->bufferLengthOriginalCUInt = lengthAUInt;
+          this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+
+          if ( this->onBufferFullCPFnc != 0 )
+          {
+            contadorLUInt += 1;
+
+            if ( this->bufferLengthCUInt == contadorLUInt )
+            {
+              contadorLUInt = 0;
+              this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+              this->onBufferFullCPFnc();
+
+              this->sendToData = this->sendToDataOriginal;
+            }
+          }
         }
         userDataLPCh ++;
       }
@@ -208,13 +229,28 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
       {
         this->sendCPFnc ( dataToSendLCh );
       }
+
       if ( this->sendToData != 0 )
       {
         *this->sendToData = dataToSendLCh;
         this->sendToData += 1;
+        *this->sendToData = 0;
 
-        //this->bufferLengthCUInt         = lengthAUInt;
-        //this->bufferLengthOriginalCUInt = lengthAUInt;
+        this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+
+        if ( this->onBufferFullCPFnc != 0 )
+        {
+          contadorLUInt += 1;
+
+          if ( ( this->bufferLengthCUInt == contadorLUInt ) || ( dataToSendLCh == 0 ) )
+          {
+            contadorLUInt = 0;
+            this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+            this->onBufferFullCPFnc();
+
+            this->sendToData = this->sendToDataOriginal;
+          }
+        }
       }
     }
   }
@@ -520,14 +556,27 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     }
   }
 
-  else if ( this->flagTest( SEND_TO_DEVICE_FLAG_EVENT_SEND ) == false )
+  else
   {
-    this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_SEND );
-    //qDebug() << "On end function run";
-    if ( this->onEndCPFnc != 0 )
+    if ( this->flagTest( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND ) == true )
     {
-      this->sendToData = this->sendToDataOriginal;
-      this->onEndCPFnc ();
+      this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+      if ( this->onBufferFullCPFnc != 0 )
+      {
+        this->onBufferFullCPFnc();
+      }
+    }
+
+    if ( this->flagTest( SEND_TO_DEVICE_FLAG_EVENT_SEND ) == false )
+    {
+      this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_SEND );
+      //qDebug() << "On end function run";
+
+      if ( this->onEndCPFnc != 0 )
+      {
+        this->sendToData = this->sendToDataOriginal;
+        this->onEndCPFnc ();
+      }
     }
   }
 }

@@ -1,0 +1,12 @@
+INPUT(
+./release\main.o
+./release\MainWindow.o
+./release\copy.o
+./release\stackenum.o
+./release\statemachine.o
+./release\RingMemory.o
+./release\SendToDevice.o
+./release\teste.o
+./release\FileSystem.o
+./release\moc_MainWindow.o
+);

@@ -1,0 +1,12 @@
+INPUT(
+./debug\main.o
+./debug\MainWindow.o
+./debug\copy.o
+./debug\stackenum.o
+./debug\statemachine.o
+./debug\RingMemory.o
+./debug\SendToDevice.o
+./debug\teste.o
+./debug\FileSystem.o
+./debug\moc_MainWindow.o
+);

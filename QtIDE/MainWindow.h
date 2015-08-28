@@ -74,6 +74,7 @@ class MainWindow : public QMainWindow
     static const char SEND_FORM_BOUNDARY[];
     static void send ( char d );
     static void endEvent ();
+    static void bufferFull ();
     void copy ( const char *p1, char *p2 );
     ~MainWindow();
 

@@ -128,10 +128,10 @@ template<class typeDataToExchange, class typeDataToMountBeforeExchange, class ty
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::send ()
 {
   char dataToSendLCh;
-
-  unsigned int contadorLUInt = 0;
-
+  typeStackDataSize dataPointerCounterTplt = 0;
+  typeDataToExchange *dataPointerTplt = 0;
   typeDataToMountBeforeExchange *userDataLPCh = '\0';
+  unsigned int contadorLUInt = 0;
 
   while ( true )
   {
@@ -187,6 +187,33 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
       dataToSendLCh = char( 0x1A );
     }
 
+    //{ad:nnn}
+    else if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'a' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 'd' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
+    {
+      //typeStackDataSize dataPointerCounterTplt = 0;
+      //typeDataToMountBeforeExchange *dataPointerTplt = '\0';
+      //this->dataTransmitPointerLineCTplt ] + 2
+
+      dataPointerTplt  = this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 3;
+      do
+      {
+        if ( ( *dataPointerTplt >= '0' ) && ( *dataPointerTplt <= '9' ) )
+        {
+          dataPointerCounterTplt *= 10;
+          dataPointerCounterTplt += ( *dataPointerTplt - 0x30 );
+          dataPointerTplt += 1;
+        }
+        else if ( *dataPointerTplt == '}' )
+        {
+          userDataLPCh = this->dataToMountCPTplt[ dataPointerCounterTplt ];
+          break;
+        }
+      }
+      while ( true );
+
+      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += dataPointerCounterTplt + 2;
+    }
+
     if ( userDataLPCh != 0 )
     {
       while ( *userDataLPCh != 0 )
@@ -198,7 +225,7 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
         if ( this->sendToData != 0 )
         {
-          *this->sendToData = dataToSendLCh;
+          *this->sendToData = *userDataLPCh;
           this->sendToData += 1;
           *this->sendToData = 0;
 

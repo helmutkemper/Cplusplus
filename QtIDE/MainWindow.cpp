@@ -7,10 +7,10 @@
 
 const char MainWindow::text1[] = { "Ola mundo{pt}!###\0" };
 const char MainWindow::text2[] = { "abc\0" };
-char MainWindow::data[2048];// = { " cruel" };
+char MainWindow::data[2048] = { "CCLK?\0" };
 
-char MainWindow::pilhaDataModem[ 5 ][ 100 ];
-const char MainWindow::MODEM_SEND_COMMAND_GET_RTC[] = { "AT+CCLK?\r\n\0" };
+char MainWindow::pilhaDataModem[ 5 ][ 100 ];//{ "CCLK?\0" };
+const char MainWindow::MODEM_SEND_COMMAND_GET_RTC[] = { "AT+{ad:3}\r\n\0" };
 const char *MainWindow::pModemReceiveRtc = &MODEM_RECEIVE_RTC[ 0 ];
 const char MainWindow::SEND_POST_FORM_ONE_DATA[] = { "POST /teste.php HTTP/1.1\\r\\nHost: www.iotm.io\\r\\nContent-Length: 165\\r\\nCache-Control: no-cache\\r\\nContent-Type: multipart/form-data; boundary=----Boundary104491,78989,97301,104729Boundary\\r\\nUser-Agent: helmut.pt.kemper.at.gmail.pt.com.firmware.code.agent\\r\\nAccept: * / *\\r\\nAccept-Encoding: deflate\\r\\nAccept-Language: en-US,en;q=1,pt-BR;q=1,pt;q=1\\r\\n\\r\\n------Boundary104491,78989,97301,104729Boundary\\r\\nContent-Disposition: form-data; name=\"teste\"\\r\\n\\r\\ntexto enviado\\r\\n------Boundary104491,78989,97301,104729Boundary--\r\n\0" };
 const char MainWindow::SEND_FORM_BOUNDARY[] = { "----Boundary104491,78989,97301,104729Boundary\0" }; //46
@@ -39,7 +39,18 @@ MainWindow::MainWindow(QWidget *parent) :
   char t[] = { "+CCLK: \"hola mundo\n\ncruel!\"\0" };
   int i = 0;
 
-  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 3 );
+
+
+  MainWindow::pilhaDataModem[ 3 ][ 0 ] = 'C';//{ "CCLK?\0" };
+  MainWindow::pilhaDataModem[ 3 ][ 1 ] = 'C';
+  MainWindow::pilhaDataModem[ 3 ][ 2 ] = 'L';
+  MainWindow::pilhaDataModem[ 3 ][ 3 ] = 'K';
+  MainWindow::pilhaDataModem[ 3 ][ 4 ] = '?';
+  MainWindow::pilhaDataModem[ 3 ][ 5 ] = 0;
+
+
+
+  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 5 );
   //this->sd->setSendFunction( &MainWindow::send );
   this->sd->setSendToDataPointer( &MainWindow::data[ 0 ], 50 );
   this->sd->setOnBufferFullFunction( &MainWindow::bufferFull );
@@ -47,6 +58,7 @@ MainWindow::MainWindow(QWidget *parent) :
   this->sd->addPointer( 0, &MainWindow::pilhaDataModem[ 0 ][ 0 ] );
   this->sd->addPointer( 1, &MainWindow::pilhaDataModem[ 1 ][ 0 ] );
   this->sd->addPointer( 2, &MainWindow::pilhaDataModem[ 2 ][ 0 ] );
+  this->sd->addPointer( 3, &MainWindow::pilhaDataModem[ 3 ][ 0 ] );
   this->sd->addTransmitData( 0, &MODEM_SEND_COMMAND_GET_RTC[ 0 ] );
   this->sd->addReceiveData( 0, 0 );
   this->sd->addTransmitData( 1, 0 );

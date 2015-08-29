@@ -33,38 +33,46 @@
 /**
  *  @brief Esta classe tem a finalidade de fazer a troca de dados entre um hardware serial e um dispositivo AT, Modem e
  *         ODB-II, mas, também foi testada para se montar uma mini estrutura de servidor web montada em uma placa
- *         FRDM-K64F da Freescale ( http://www.freescale.com ) e testada na plataforma MBed ( http://www.mbed.org ).
+ *         FRDM-K64F da Freescale ( http://www.freescale.com ) e testada no portal MBed ( http://www.mbed.org ).
  *
  *         Basicamente esta classe é uma máquina de estados feita para passar informações e esperar pela resposta do
- *         dispositivo.
+ *         dispositivo, caso necessário.
  *
- *         Para isto imagine um modem baseado em protocolo AT, como o SIM900, muito comum em projetos Arduino. O
+ *         Para isto, imagine um modem baseado em protocolo AT, como o SIM900, muito comum em projetos Arduino. O
  *         protocolo consiste em passar mensagens de texto simples entre o hardware e o modem, de forma a gerar tarefas
  *         simples, como acessar internet ou passar e receber SMS.
  *
  *         No caso do envio de SMS pelo modem SIM900, o protocolo seria:
  *
- *         Enviar: AT+CMGF=1\r\n
- *         Receber: OK\r\n
- *         Enviar: AT+CMGS="número do telefone"\r\n
- *         Receber: >
- *         Enviar: mensagem de texto
- *         Enviar: char( 0x1A )
- *         Receber: OK\r\n
+ *         Enviar:  "AT+CMGF=1\r\n"
+ *         Receber: "OK\r\n"
+ *         Enviar:  "AT+CMGS="número do telefone"\r\n"
+ *         Receber: "> "
+ *         Enviar:  "mensagem de texto"
+ *         Enviar:  "char( 0x1A )"
+ *         Receber: "OK\r\n"
  *
- *         Como dá para ver, o existem uma série de pequenos passos a serem compridos, todos de forma síncrona, onde o
+ *         Como dá para ver, existem uma série de pequenos passos a serem cumpridos, todos de forma síncrona, onde o
  *         próximo dado a ser transmitido necessita esperar para resposta de conclusão do passo anterior.
  *
- *         Antes de usar esta classe tenha em mente que a mesma foi testada em Arduino Mega e deve rodar independente
+ *         Antes de usar esta classe, tenha em mente que a mesma foi testada em Arduino Mega e deve rodar independente
  *         da plataforma, e o template foi pensado para dados tipo char ou unsigned char, não tendo sido testado para
  *         string ou dados mais complexos.
  *
- *         A classe também prevê o a necessidade de se preparar um array de char antes do envio, onde uma constate pode
- *         perfeitamente ser montada de acordo com a necessidade da operação, sem maiores problemas.
+ *         A classe também prevê a necessidade de se preparar um array de char antes do envio, onde uma constate pode
+ *         perfeitamente ser montada de acordo com a necessidade da operação, apontando para o array de char contendo
+ *         os dados a serem enviados sem maiores problemas.
  *
  *         Esta classe tem os seguintes templates:
  *         template class SendToDevice<const char, char, unsigned char, unsigned char>;
  *         template class SendToDevice<const unsigned char, unsigned char, unsigned char, unsigned char>;
+ *
+ *         Para o recebimento dos dados, esta classe recebe dados unitários, um char por vez, e usa ponteiros externos
+ *         para varrer um modelo de string esperada e procurar por dados contidos dentro da string e arquivar os dados em
+ *         variáveis esternas.
+ *
+ *         No envio de dados, existem duas possibilidades, uma função chamada a cada char a ser enviado, ou um buffer de
+ *         char, onde uma função externa é chamada sempre que buffer estiver pronto ou lotado.
  *
  *         Boa Sorte.
  *         Kemper
@@ -114,7 +122,21 @@ class SendToDevice
      * @param functPointerAPFn, este é um ponteiro de função do tipo void (*p)
      */
     void setSendFunction ( PT_VOID_CH functPointerAPFn );
+
+    /**
+     * @brief setSendToDataPointer, aponta para um buffer externo, no caso, um array de char, onde fica o dado montado.
+     *
+     * @param toDataATplt, ponteiro do array de char.
+     */
     void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt );
+
+    /**
+     * @brief setSendToDataPointer, aponta para um buffer externo, no caso, um array de char, onde fica o dado montado.
+     *
+     * @param toDataATplt, ponteiro do array de char.
+     *
+     * @param lengthAUInt, tamanho do buffer. Deve receber sizeof( buffer ) - 1, o último dado é sempre '\0'
+     */
     void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt, unsigned int lengthAUInt );
 
     /**
@@ -123,6 +145,12 @@ class SendToDevice
      * @param functPointerAPFn, este é um ponteiro de função do tipo void ()
      */
     void setOnEndFunction ( PT_VOID_VOID functPointerAPFn );
+
+    /**
+     * @brief setOnBufferFullFunction, recebe o ponteiro da função a ser chamada quando o buffer estiver cheio.
+     *
+     * @param functPointerAPFn, este é um ponteiro de função do tipo void ()
+     */
     void setOnBufferFullFunction ( PT_VOID_VOID functPointerAPFn );
 
     /**
@@ -204,17 +232,70 @@ class SendToDevice
      * @param dataAddressAPTplt, endereço do dado a ser transmitido.
      */
     void addTransmitData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt );
+
+    /**
+     * @brief addPointer, todos os dados recebidos podem ser separados conforme falado na função testPointer() e todo dado enviado
+     *        pode ser montado conforme descrito na função run().
+     *
+     *        Para isto, você deve adicionar ponteiros para arrays de char, na ordem que eles aparecem nos dados a serem
+     *        transmitidos ou recebidos. Apenas tome cuidado de usar arrays de char suficientemente longos para receber os dados,
+     *        ou o sistema pode travar.
+     *
+     * @param addressATplt, ordem dos dados encontrados começando em zero.
+     *
+     * @param dataAddressAPTplt, ponteiro do dado.
+     */
     void addPointer ( typeStackDataSize addressATplt, typeDataToMountBeforeExchange *dataAddressAPTplt );
+
+    /**
+     * @brief infinityLoop, coloque esta função de forma que ela fique sendo chamada sempre, independente de haver dados ou não.
+     */
     void infinityLoop ();
+
+    /**
+     * @brief run, inicia o processo de envio de dados.
+     *
+     *        Este método trabalha em conjunto com o método addPointer() para formatar os dados a serem enviados.
+     *        {pt}  - indica o próximo ponteiro da dado a ser enviado;
+     *        {bye} - char( 1A ), usado nas funções do motem baseados em comandos AT.
+     */
     void run ();
+
+    /**
+     * @brief lembre-se de destruir a classe e limpar a memória.
+     */
     ~SendToDevice();
 
   private:
+    /**
+     * @brief flagSet, setBit(). A linguagem C/C++ usa um byte interio para booleano, este método usa 1 byte para 8 booleanos.
+     *
+     * @param flagACh, valor entre 0 e 7 com o endereço do bit.
+     */
     void flagSet ( char flagACh );
+
+    /**
+     * @brief flagClear, clearBit(). A linguagem C/C++ usa um byte interio para booleano, este método usa 1 byte para 8 booleanos.
+     *
+     * @param flagACh, valor entre 0 e 7 com o endereço do bit.
+     */
     void flagClear ( char flagACh );
+
+    /**
+     * @brief flagTest, testBit(). A linguagem C/C++ usa um byte interio para booleano, este método usa 1 byte para 8 booleanos.
+     * @param flagACh, valor entre 0 e 7 com o endereço do bit.
+     * @return true ou false com o valor do bit.
+     */
     bool flagTest ( char flagACh );
+
+    /**
+     * @brief send, processa o dado.
+     */
     void send ();
 
+    /**
+     * @brief bufferLengthCUInt, tamanho do array de dados a serem recebidos ou transmitidos.
+     */
     unsigned int bufferLengthCUInt;
 
     PT_VOID_VOID onBufferFullCPFnc;

@@ -324,7 +324,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
           this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
-          return true;
+          return returnLCh;
         }
 
         this->dataListLineCTplt ++;
@@ -345,7 +345,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     {
       if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( inDataATplt == ( typeDataToExchange )'+' ) || ( inDataATplt == ( typeDataToExchange )'-' ) )
       {
-        return true;
+        return returnLCh;
       }
 
       ( *apcchPointer ) = ( *apcchPointer ) + 6;
@@ -361,7 +361,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
           this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
-          return true;
+          return returnLCh;
         }
 
         this->dataListLineCTplt ++;
@@ -387,7 +387,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
           this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
-          return true;
+          return returnLCh;
         }
 
         this->dataListLineCTplt ++;
@@ -413,7 +413,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
           this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
-          return true;
+          return returnLCh;
         }
 
         this->dataListLineCTplt ++;
@@ -439,7 +439,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
           this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
-          return true;
+          return returnLCh;
         }
 
         this->dataListLineCTplt ++;
@@ -460,7 +460,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     {
       if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'A' ) && ( inDataATplt <= ( typeDataToExchange )'Z' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'a' ) && ( inDataATplt <= ( typeDataToExchange )'z' ) ) || ( inDataATplt == ( typeDataToExchange )' ' ) )
       {
-        return true;
+        return returnLCh;
       }
 
       ( *apcchPointer ) = ( *apcchPointer ) + 6;
@@ -476,7 +476,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
           this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
           *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
-          return true;
+          return returnLCh;
         }
 
         this->dataListLineCTplt ++;
@@ -527,7 +527,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
   reset_pointers:
     ( *apcchPointer ) = apcchPointerStart;
-    return ( char ) 0;
+    return returnLCh;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>

@@ -72,6 +72,10 @@ class MainWindow : public QMainWindow
     explicit MainWindow(QWidget *parent = 0);
     static const char SEND_POST_FORM_ONE_DATA[];
     static const char SEND_FORM_BOUNDARY[];
+    static const char MODEM_SEND_COMMAND_GET_RTC[];
+    static const char MODEM_RECEIVE_RTC[];
+    static const char *pModemReceiveRtc;
+    static char pilhaDataModem[ 5 ][ 100 ];
     static void send ( char d );
     static void endEvent ();
     static void bufferFull ();

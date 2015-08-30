@@ -5,8 +5,6 @@
 
 #include "../SendToDevice/SendToDevice.h"
 
-//TODO: COLOCAR OS PONTEIROS DE FUNÇÃO DENTRO DO TEMPLATE
-
 const char MainWindow::text1[] = { "Ola mundo{pt}!###\0" };
 const char MainWindow::text2[] = { "abc\0" };
 char MainWindow::data[2048] = { "CCLK?\0" };
@@ -52,30 +50,30 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-  SendToDevice<const char, char, unsigned char, unsigned char>::init( 10, 5, 5 );
-  //SendToDevice<const char, char, unsigned char, unsigned char>::setSendFunction( &MainWindow::send );
-  SendToDevice<const char, char, unsigned char, unsigned char>::setSendToDataPointer( &MainWindow::data[ 0 ], 50 );
-  SendToDevice<const char, char, unsigned char, unsigned char>::setOnBufferFullFunction( &MainWindow::bufferFull );
-  SendToDevice<const char, char, unsigned char, unsigned char>::setOnEndFunction( &MainWindow::endEvent );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addPointer( 0, &MainWindow::pilhaDataModem[ 0 ][ 0 ] );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addPointer( 1, &MainWindow::pilhaDataModem[ 1 ][ 0 ] );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addPointer( 2, &MainWindow::pilhaDataModem[ 2 ][ 0 ] );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addPointer( 3, &MainWindow::pilhaDataModem[ 3 ][ 0 ] );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addTransmitData( 0, &MODEM_SEND_COMMAND_GET_RTC[ 0 ] );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addFunctionData( 0, &MainWindow::endEvent );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addReceiveData( 0, 0 );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addTransmitData( 1, 0 );
-  SendToDevice<const char, char, unsigned char, unsigned char>::addReceiveData( 1, 0 );
-  SendToDevice<const char, char, unsigned char, unsigned char>::run();
+  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 5, 5 );
+  //this->sd->setSendFunction( &MainWindow::send );
+  this->sd->setSendToDataPointer( &MainWindow::data[ 0 ], 50 );
+  this->sd->setOnBufferFullFunction( &MainWindow::bufferFull );
+  this->sd->setOnEndFunction( &MainWindow::endEvent );
+  this->sd->addPointer( 0, &MainWindow::pilhaDataModem[ 0 ][ 0 ] );
+  this->sd->addPointer( 1, &MainWindow::pilhaDataModem[ 1 ][ 0 ] );
+  this->sd->addPointer( 2, &MainWindow::pilhaDataModem[ 2 ][ 0 ] );
+  this->sd->addPointer( 3, &MainWindow::pilhaDataModem[ 3 ][ 0 ] );
+  this->sd->addTransmitData( 0, &MODEM_SEND_COMMAND_GET_RTC[ 0 ] );
+  this->sd->addFunctionData( 0, &MainWindow::endEvent );
+  this->sd->addReceiveData( 0, 0 );
+  this->sd->addTransmitData( 1, 0 );
+  this->sd->addReceiveData( 1, 0 );
+  this->sd->run();
 
   for ( int i = 0; i != 50; i += 1 )
   {
-    SendToDevice<const char, char, unsigned char, unsigned char>::infinityLoop();
+    this->sd->infinityLoop();
   }
 
   while ( t[ i ] != 0 )
   {
-    if ( SendToDevice<const char, char, unsigned char, unsigned char>::testPointer ( &pModemReceiveRtc, &MODEM_RECEIVE_RTC[ 0 ], t[ i ] ) == ( char ) 1 )
+    if ( this->sd->testPointer ( &pModemReceiveRtc, &MODEM_RECEIVE_RTC[ 0 ], t[ i ] ) == ( char ) 1 )
     {
       qDebug() << "entrou no if";
       qDebug() << MainWindow::pilhaDataModem[ 0 ];
@@ -103,7 +101,7 @@ void MainWindow::endEvent ()
 
 void MainWindow::update ()
 {
-  SendToDevice<const char, char, unsigned char, unsigned char>::infinityLoop();
+  this->sd->infinityLoop();
 }
 
 MainWindow::~MainWindow()
@@ -118,15 +116,15 @@ void MainWindow::send ( char d )
 
 void MainWindow::on_pushButton_clicked()
 {
-  SendToDevice<const char, char, unsigned char, unsigned char>::onIncomingData( 'a' );
+  this->sd->onIncomingData( 'a' );
 }
 
 void MainWindow::on_pushButton_2_clicked()
 {
-  SendToDevice<const char, char, unsigned char, unsigned char>::onIncomingData( 'b' );
+  this->sd->onIncomingData( 'b' );
 }
 
 void MainWindow::on_pushButton_3_clicked()
 {
-  SendToDevice<const char, char, unsigned char, unsigned char>::onIncomingData( 'c' );
+  this->sd->onIncomingData( 'c' );
 }

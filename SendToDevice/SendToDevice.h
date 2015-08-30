@@ -110,8 +110,79 @@ class SendToDevice
      * @param stackDataSizeAUCh, quantidade máxima ( +1 ) de registros na fila de variáveis a serem concatenadas com a
      *        lista de constantes. A quantidade máxima de registros na memória depende da forma como as constantes
      *        foram criadas e da quantidade de constantes usadas por processo. Veja uma explicação mais detalhada abaixo.
+     *
+     * @code
+                // Você necessita enviar um comando ao modem para pegar a hora do RTC, então, em algum lugar do código
+                // tem a constante global abaixo
+                const char MODEM_SEND_COMMAND_GET_RTC[] = { "AT+CCLK?\r\n\0" };
+                // Segundo o manual do modem, a resposta do modem será: "+CCLK: \"09/10/15,19:33:42+00\"\r\n"
+                // Para capturar a data e a hora, você deve montar a seguinte constante em algum lugar do código:
+                const char MODEM_RECEIVE_RTC[] = { "+CCLK: \"{time},{time}{snum}\0" };
+                // A classe vai comparar, sem capturar, os dados recebidos até encontrar os modificadores de
+                // captura abaixo.
+                // {time} - Captura data/hora no formato: [0-9]{1,}[:/][0-9]{1,}[:/][0-9]{1,}
+                // {snum} - Captura número, formato: [0-9+-]{1,}
+                // Em seguida, você deve criar um ponteiro para o início da constante
+                const char *pModemReceiveRtc = &MODEM_RECEIVE_RTC[ 0 ];
+
+                // Configurando a classe
+                // 1° elemento, quantidade máxima de passos necessário para comprir a tarefa + 1;
+                // 2° elemento, quantidade máxima de espaços na memória para arquivar dados enviados/recebidos;
+                // 3° elemento, quantidade máxima de funções a serem executadas antes do envio dos dados;
+                SendToDevice<const char, char, unsigned char, unsigned char> *sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 5, 5 );
+
+                // Existe a necessidade de enviar dados pela porta serial, um de cada vez?
+                // 1° elemento, ponteiro de função tipo void ( *p ) ( template )
+                sd->setSendFunction( &sendFunction );
+
+                // O dado a ser enviado não necessita de uma função de envio, mas, necessita de um buffer para ser arquivado
+                // enquanto o mesmo não é enviado.
+                sd->setSendToDataPointer( &bufferAddress, unsigned int buffer size - 1 );
+                sd->setOnBufferFullFunction( &onBufferFullFunction );
+
+                // Para todos os comandos a serem enviados e recebidos, você repetirá os passos abaixo.
+                // Limpe a memória da classe
+                sd->clear();
+
+                // O retorno do modem será +CCLK: "09/10/15,19:33:42+00"\r\n
+                // Ou seja, data, fora e fuso horário.
+                // Nossa constante tem: {time}, {time} e {snum}
+                //                      addr 0, addr 1 e addr 2
+                // na ordem que aparecem
+                sd->addPointer( 0, &array_char_data[ 0 ] );
+                sd->addPointer( 1, &array_char_hora[ 0 ] );
+                sd->addPointer( 2, &array_char_fuso_horario[ 0 ] );
+                // Preparando o buffer de passos
+                // Aponta para o comando a ser enviado.
+                sd->addTransmitData( 0, &MODEM_SEND_COMMAND_GET_RTC[ 0 ] );
+                // O modem vai devolver "OK\r\n", mas, este passo não é relevante, então vamos ignorar ele, apontando 0 para
+                // o endereço da função a ser recebida.
+                // O dado recebido deve ser usado para esperar por respostas tipo OK\r\n, que devem ser esperadas antes do
+                // próximo envio de dados, mas, não são tratados.
+                sd->addReceiveData( 0, 0 );
+                // O último endereço da pilha deve receber zero para indicar o fim do envio.
+                // Isto é obrigatório sempre.
+                sd->addTransmitData( 1, 0 );
+                sd->addReceiveData( 1, 0 );
+                // Dispare o envio
+                sd->run();
+
+                // Todo uC necessita de um loop infinito para não trevar. Nesse loop, coloque a função abaixo
+                sd->infinityLoop();
+
+                // O próximo passo é criar uma função para receber os dados da porta serial, e dentro dela
+                // colocar o código:
+
+                char dado_serial = Serial.read(); // De a cordo com a sua plataforma.
+                if ( sd->testPointer ( &pModemReceiveRtc, &MODEM_RECEIVE_RTC[ 0 ], dado_serial ) == ( char ) 1 )
+                {
+                  // A resposta do modem foi capturada
+                }
+
+
+       @endcode
      */
-    SendToDevice( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh );
+    SendToDevice( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh );
 
     /**
      * @brief setSendFunction, recebe o ponteiro da função a ser chamada sempre que houver a necessidade de se enviar
@@ -174,7 +245,7 @@ class SendToDevice
      *        Este método trabalha em conjunto com o método addPointer() para permitir a captura de dados em formatos
      *        específicos. Veja a lista abaixo.
      *
-     *        {time} - Captura data/hora, formato: [0-9]{1,}[:/][0-9]{1,}[0-9]{1,}[:/]
+     *        {time} - Captura data/hora, formato: [0-9]{1,}[:/][0-9]{1,}[:/][0-9]{1,}
      *        {inum} - Ignora número, formato: [^0-9]{1,}
      *        {snum} - Captura número, formato: [0-9+-]{1,}
      *        {num}  - Captura número, formato: [0-9]{1,}
@@ -248,6 +319,16 @@ class SendToDevice
     void addPointer ( typeStackDataSize addressATplt, typeDataToMountBeforeExchange *dataAddressAPTplt );
 
     /**
+     * @brief addFunctionData, o dado enviado pode ser usado para rodar uma função interna do uC e atualizar alguma informação
+     *        qualquer antes do envio da mesma.
+     *
+     * @param addressATplt, endereço da função na pilha.
+     *
+     * @param functionAddressAPTplt, endereço da função.
+     */
+    void addFunctionData ( typeStackStepsSize addressATplt, PT_VOID_VOID functionAddressAPTplt );
+
+    /**
      * @brief infinityLoop, coloque esta função de forma que ela fique sendo chamada sempre, independente de haver dados ou não.
      */
     void infinityLoop ();
@@ -256,8 +337,10 @@ class SendToDevice
      * @brief run, inicia o processo de envio de dados.
      *
      *        Este método trabalha em conjunto com o método addPointer() para formatar os dados a serem enviados.
-     *        {pt}  - indica o próximo ponteiro da dado a ser enviado;
-     *        {bye} - char( 1A ), usado nas funções do motem baseados em comandos AT.
+     *        {pt}   - indica o próximo ponteiro da dado a ser enviado;
+     *        {ad:n} - é o mesmo que {pt}, porém, n representa o endereço da pilha;
+     *        {fn:n} - executa uma função previamente registrada no endereço n, antes do envio do dado.
+     *        {bye}  - char( 1A ), usado nas funções do motem baseados em comandos AT.
      */
     void run ();
 
@@ -306,12 +389,14 @@ class SendToDevice
 
     char flagsCCh;
 
+    PT_VOID_VOID *functionToExecuteCPFnc;
     typeDataToMountBeforeExchange **dataToMountCPTplt;
     typeDataToExchange **dataTransmitCPTplt;
     typeDataToExchange **dataReceiveCPTplt;
 
     typeStackStepsSize stackStepsSizeCTplt;
     typeStackDataSize stackDataSizeCTplt;
+    typeStackStepsSize stackFunctionsSizeCTplt;
 
     typeStackDataSize dataListLineCTplt;
     typeStackStepsSize dataTransmitPointerLineCTplt;

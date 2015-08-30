@@ -10,7 +10,7 @@ const char MainWindow::text2[] = { "abc\0" };
 char MainWindow::data[2048] = { "CCLK?\0" };
 
 char MainWindow::pilhaDataModem[ 5 ][ 100 ];//{ "CCLK?\0" };
-const char MainWindow::MODEM_SEND_COMMAND_GET_RTC[] = { "AT+{ad:3}\r\n\0" };
+const char MainWindow::MODEM_SEND_COMMAND_GET_RTC[] = { "AT+{ad:3}{fn:0}\r\n\0" };
 const char *MainWindow::pModemReceiveRtc = &MODEM_RECEIVE_RTC[ 0 ];
 const char MainWindow::SEND_POST_FORM_ONE_DATA[] = { "POST /teste.php HTTP/1.1\\r\\nHost: www.iotm.io\\r\\nContent-Length: 165\\r\\nCache-Control: no-cache\\r\\nContent-Type: multipart/form-data; boundary=----Boundary104491,78989,97301,104729Boundary\\r\\nUser-Agent: helmut.pt.kemper.at.gmail.pt.com.firmware.code.agent\\r\\nAccept: * / *\\r\\nAccept-Encoding: deflate\\r\\nAccept-Language: en-US,en;q=1,pt-BR;q=1,pt;q=1\\r\\n\\r\\n------Boundary104491,78989,97301,104729Boundary\\r\\nContent-Disposition: form-data; name=\"teste\"\\r\\n\\r\\ntexto enviado\\r\\n------Boundary104491,78989,97301,104729Boundary--\r\n\0" };
 const char MainWindow::SEND_FORM_BOUNDARY[] = { "----Boundary104491,78989,97301,104729Boundary\0" }; //46
@@ -28,7 +28,7 @@ void MainWindow::copy ( const char *p1, char *p2 )
   }
 }
 
-const char MainWindow::MODEM_RECEIVE_RTC[] = { "+CCLK: \"{all}\0" };
+const char MainWindow::MODEM_RECEIVE_RTC[] = { "+CCLK: \"{time}{time}{snum}\0" };
 MainWindow::MainWindow(QWidget *parent) :
   QMainWindow(parent),
   ui(new Ui::MainWindow)
@@ -50,7 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 
 
-  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 5 );
+  this->sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 5, 5 );
   //this->sd->setSendFunction( &MainWindow::send );
   this->sd->setSendToDataPointer( &MainWindow::data[ 0 ], 50 );
   this->sd->setOnBufferFullFunction( &MainWindow::bufferFull );
@@ -60,6 +60,7 @@ MainWindow::MainWindow(QWidget *parent) :
   this->sd->addPointer( 2, &MainWindow::pilhaDataModem[ 2 ][ 0 ] );
   this->sd->addPointer( 3, &MainWindow::pilhaDataModem[ 3 ][ 0 ] );
   this->sd->addTransmitData( 0, &MODEM_SEND_COMMAND_GET_RTC[ 0 ] );
+  this->sd->addFunctionData( 0, &MainWindow::endEvent );
   this->sd->addReceiveData( 0, 0 );
   this->sd->addTransmitData( 1, 0 );
   this->sd->addReceiveData( 1, 0 );

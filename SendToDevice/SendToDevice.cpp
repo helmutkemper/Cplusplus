@@ -1,14 +1,16 @@
 #include "SendToDevice.h"
 
 template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
-SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::SendToDevice( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh )
+SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::SendToDevice( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh )
 {
-  this->dataToMountCPTplt      = new typeDataToMountBeforeExchange*[ stackDataSizeAUCh ];
+  this->dataToMountCPTplt = new typeDataToMountBeforeExchange*[ stackDataSizeAUCh ];
   this->dataTransmitCPTplt = new typeDataToExchange*[ stackStepsSizeAUCh ];
   this->dataReceiveCPTplt = new typeDataToExchange*[ stackStepsSizeAUCh ];
+  this->functionToExecuteCPFnc = new PT_VOID_VOID[ stackFunctionsSizeAUCh ];
 
   this->stackStepsSizeCTplt = stackStepsSizeAUCh;
   this->stackDataSizeCTplt  = stackDataSizeAUCh;
+  this->stackFunctionsSizeCTplt = stackFunctionsSizeAUCh;
 
   this->dataTransmitPointerLineCTplt = 0;
   this->dataReceivePointerLineCTplt = 0;
@@ -37,6 +39,17 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
   this->sendToData  = this->sendToDataOriginal;
   this->bufferLengthCUInt = 0;
+}
+
+template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::addFunctionData ( typeStackStepsSize addressATplt, PT_VOID_VOID functionAddressAPTplt )
+{
+  if ( this->stackFunctionsSizeCTplt <= addressATplt )
+  {
+    return;
+  }
+
+  this->functionToExecuteCPFnc[ addressATplt ] = functionAddressAPTplt;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -122,6 +135,7 @@ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSi
   delete[] this->dataTransmitCPTplt;
   delete[] this->dataReceiveCPTplt;
   delete[] this->dataToMountCPTplt;
+  delete[] this->functionToExecuteCPFnc;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -132,6 +146,7 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
   typeDataToExchange *dataPointerTplt = 0;
   typeDataToMountBeforeExchange *userDataLPCh = '\0';
   unsigned int contadorLUInt = 0;
+  unsigned int contadorPointerLUInt = 0;
 
   while ( true )
   {
@@ -190,10 +205,8 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     //{ad:nnn}
     else if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'a' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 'd' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
     {
-      //typeStackDataSize dataPointerCounterTplt = 0;
-      //typeDataToMountBeforeExchange *dataPointerTplt = '\0';
-      //this->dataTransmitPointerLineCTplt ] + 2
-
+      dataPointerCounterTplt = 0;
+      contadorPointerLUInt = 0;
       dataPointerTplt  = this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 3;
       do
       {
@@ -202,6 +215,7 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
           dataPointerCounterTplt *= 10;
           dataPointerCounterTplt += ( *dataPointerTplt - 0x30 );
           dataPointerTplt += 1;
+          contadorPointerLUInt += 1;
         }
         else if ( *dataPointerTplt == '}' )
         {
@@ -211,7 +225,32 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
       }
       while ( true );
 
-      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += dataPointerCounterTplt + 2;
+      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += ( contadorPointerLUInt + 4 );
+    }
+
+    //{fn:nnn}
+    else if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'f' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 'n' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
+    {
+      dataPointerCounterTplt = 0;
+      contadorPointerLUInt = 0;
+      dataPointerTplt  = this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 3;
+      do
+      {
+        if ( ( *dataPointerTplt >= '0' ) && ( *dataPointerTplt <= '9' ) )
+        {
+          dataPointerCounterTplt *= 10;
+          dataPointerCounterTplt += ( *dataPointerTplt - 0x30 );
+          dataPointerTplt += 1;
+          contadorPointerLUInt += 1;
+        }
+        else if ( *dataPointerTplt == '}' )
+        {
+          this->functionToExecuteCPFnc[ dataPointerCounterTplt ] ();
+          this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += ( contadorPointerLUInt + 4 );
+          return;
+        }
+      }
+      while ( true );
     }
 
     if ( userDataLPCh != 0 )

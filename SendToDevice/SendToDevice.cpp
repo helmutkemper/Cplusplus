@@ -1,141 +1,215 @@
 #include "SendToDevice.h"
 
+
+
 template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
-SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::SendToDevice( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh )
+unsigned int SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::bufferLengthCUInt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+PT_VOID_VOID SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc;
+
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+PT_VOID_VOID SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onEndCPFnc;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+PT_VOID_CH SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeDataToMountBeforeExchange *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeDataToMountBeforeExchange *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagsCCh;
+
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+PT_VOID_VOID *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::functionToExecuteCPFnc;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeDataToMountBeforeExchange **SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeDataToExchange **SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeDataToExchange **SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt;
+
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeStackStepsSize SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeStackDataSize SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackDataSizeCTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeStackStepsSize SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackFunctionsSizeCTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeStackDataSize SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeStackStepsSize SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt;
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+typeStackStepsSize SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::SendToDevice()
 {
-  this->dataToMountCPTplt = new typeDataToMountBeforeExchange*[ stackDataSizeAUCh ];
-  this->dataTransmitCPTplt = new typeDataToExchange*[ stackStepsSizeAUCh ];
-  this->dataReceiveCPTplt = new typeDataToExchange*[ stackStepsSizeAUCh ];
-  this->functionToExecuteCPFnc = new PT_VOID_VOID[ stackFunctionsSizeAUCh ];
 
-  this->stackStepsSizeCTplt = stackStepsSizeAUCh;
-  this->stackDataSizeCTplt  = stackDataSizeAUCh;
-  this->stackFunctionsSizeCTplt = stackFunctionsSizeAUCh;
+}
+template <class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
+void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::init( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh )
+{
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt = new typeDataToMountBeforeExchange*[ stackDataSizeAUCh ];
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt = new typeDataToExchange*[ stackStepsSizeAUCh ];
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt = new typeDataToExchange*[ stackStepsSizeAUCh ];
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::functionToExecuteCPFnc = new PT_VOID_VOID[ stackFunctionsSizeAUCh ];
 
-  this->dataTransmitPointerLineCTplt = 0;
-  this->dataReceivePointerLineCTplt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt = stackStepsSizeAUCh;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackDataSizeCTplt  = stackDataSizeAUCh;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackFunctionsSizeCTplt = stackFunctionsSizeAUCh;
 
-  this->dataListLineCTplt   = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt = 0;
 
-  this->onEndCPFnc = 0;
-  this->onBufferFullCPFnc = 0;
-  this->sendCPFnc  = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt   = 0;
 
-  this->sendToData = 0;
-  this->sendToDataOriginal = 0;
-  this->bufferLengthCUInt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onEndCPFnc = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc  = 0;
 
-  this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::bufferLengthCUInt = 0;
+
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::clear()
 {
-  for ( unsigned char i = 0; i != this->stackStepsSizeCTplt; i += 1 )
+  for ( unsigned char i = 0; i != SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt; i += 1 )
   {
-    this->dataTransmitCPTplt[ i ] = 0;
-    this->dataReceiveCPTplt[ i ] = 0;
+    SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ i ] = 0;
+    SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ i ] = 0;
   }
 
-  this->sendToData  = this->sendToDataOriginal;
-  this->bufferLengthCUInt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData  = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::bufferLengthCUInt = 0;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::addFunctionData ( typeStackStepsSize addressATplt, PT_VOID_VOID functionAddressAPTplt )
 {
-  if ( this->stackFunctionsSizeCTplt <= addressATplt )
+  if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackFunctionsSizeCTplt <= addressATplt )
   {
     return;
   }
 
-  this->functionToExecuteCPFnc[ addressATplt ] = functionAddressAPTplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::functionToExecuteCPFnc[ addressATplt ] = functionAddressAPTplt;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::addReceiveData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt )
 {
-  if ( this->stackStepsSizeCTplt <= addressATplt )
+  if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt <= addressATplt )
   {
     return;
   }
 
-  this->dataReceiveCPTplt[ addressATplt ] = dataAddressAPTplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ addressATplt ] = dataAddressAPTplt;
 
-  if ( addressATplt + 1 <= this->stackStepsSizeCTplt )
+  if ( addressATplt + 1 <= SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt )
   {
-    this->dataReceiveCPTplt[ addressATplt + 1 ] = 0;
+    SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ addressATplt + 1 ] = 0;
   }
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::addTransmitData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt )
 {
-  if ( this->stackStepsSizeCTplt <= addressATplt )
+  if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt <= addressATplt )
   {
     return;
   }
 
-  this->dataTransmitCPTplt[ addressATplt ] = dataAddressAPTplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ addressATplt ] = dataAddressAPTplt;
 
-  if ( addressATplt + 1 <= this->stackStepsSizeCTplt )
+  if ( addressATplt + 1 <= SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackStepsSizeCTplt )
   {
-    this->dataTransmitCPTplt[ addressATplt + 1 ] = 0;
+    SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ addressATplt + 1 ] = 0;
   }
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::addPointer ( typeStackDataSize addressATplt, typeDataToMountBeforeExchange *dataAddressAPTplt )
 {
-  if ( this->stackDataSizeCTplt <= addressATplt )
+  if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::stackDataSizeCTplt <= addressATplt )
   {
     return;
   }
 
-  this->dataToMountCPTplt[ addressATplt ] = dataAddressAPTplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ addressATplt ] = dataAddressAPTplt;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setOnBufferFullFunction ( PT_VOID_VOID functPointerAPFn )
 {
-  this->onBufferFullCPFnc = functPointerAPFn;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc = functPointerAPFn;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setSendFunction ( PT_VOID_CH functPointerAPFn )
 {
-  this->sendCPFnc = functPointerAPFn;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc = functPointerAPFn;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt )
 {
-  this->sendToData         = toDataATplt;
-  this->sendToDataOriginal = toDataATplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData         = toDataATplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal = toDataATplt;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt, unsigned int lengthAUInt )
 {
-  this->sendToData         = toDataATplt;
-  this->sendToDataOriginal = toDataATplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData         = toDataATplt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal = toDataATplt;
 
-  this->bufferLengthCUInt         = lengthAUInt;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::bufferLengthCUInt         = lengthAUInt;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::setOnEndFunction (PT_VOID_VOID functPointerAPFn )
 {
-  this->onEndCPFnc = functPointerAPFn;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onEndCPFnc = functPointerAPFn;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
-SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::~SendToDevice()
+void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::destructor()
 {
-  delete[] this->dataTransmitCPTplt;
-  delete[] this->dataReceiveCPTplt;
-  delete[] this->dataToMountCPTplt;
-  delete[] this->functionToExecuteCPFnc;
+  delete[] SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt;
+  delete[] SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt;
+  delete[] SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt;
+  delete[] SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::functionToExecuteCPFnc;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -150,35 +224,35 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
   while ( true )
   {
-    dataToSendLCh = *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ];
+    dataToSendLCh = *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ];
 
     if ( dataToSendLCh == '\0' )
     {
-      this->dataTransmitPointerLineCTplt ++;
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ++;
 
-      if ( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == '\0' )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] == '\0' )
       {
-        this->flagClear( SEND_TO_DEVICE_FLAG_RUNING );
-        this->flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_RUNING );
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
         return;
       }
 
       else
       {
-        if ( this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] != '\0' )
+        if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] != '\0' )
         {
-          this->flagSet( SEND_TO_DEVICE_FLAG_WAITING );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_WAITING );
         }
 
         /*
         original
-        if ( this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] == '\0' )
+        if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] == '\0' )
         {
-          this->flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
         }
         else
         {
-          this->flagSet( SEND_TO_DEVICE_FLAG_WAITING );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_WAITING );
         }
         */
         return;
@@ -187,27 +261,27 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
     else
     {
-      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] ++;
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] ++;
     }
 
-    if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'p' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 't' ) )
+    if ( ( dataToSendLCh == '{' ) && ( *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] == 'p' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 1 ) == 't' ) )
     {
-      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += 3;
-      userDataLPCh = this->dataToMountCPTplt[ this->dataListLineCTplt++ ];
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] += 3;
+      userDataLPCh = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt++ ];
     }
 
-    else if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'b' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 'y' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 2 ) == 'e' ) )
+    else if ( ( dataToSendLCh == '{' ) && ( *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] == 'b' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 1 ) == 'y' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 2 ) == 'e' ) )
     {
-      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += 4;
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] += 4;
       dataToSendLCh = char( 0x1A );
     }
 
     //{ad:nnn}
-    else if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'a' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 'd' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
+    else if ( ( dataToSendLCh == '{' ) && ( *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] == 'a' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 1 ) == 'd' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
     {
       dataPointerCounterTplt = 0;
       contadorPointerLUInt = 0;
-      dataPointerTplt  = this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 3;
+      dataPointerTplt  = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 3;
       do
       {
         if ( ( *dataPointerTplt >= '0' ) && ( *dataPointerTplt <= '9' ) )
@@ -219,21 +293,21 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
         }
         else if ( *dataPointerTplt == '}' )
         {
-          userDataLPCh = this->dataToMountCPTplt[ dataPointerCounterTplt ];
+          userDataLPCh = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ dataPointerCounterTplt ];
           break;
         }
       }
       while ( true );
 
-      this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += ( contadorPointerLUInt + 4 );
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] += ( contadorPointerLUInt + 4 );
     }
 
     //{fn:nnn}
-    else if ( ( dataToSendLCh == '{' ) && ( *this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] == 'f' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 1 ) == 'n' ) && ( *( this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
+    else if ( ( dataToSendLCh == '{' ) && ( *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] == 'f' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 1 ) == 'n' ) && ( *( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 2 ) == ':' ) )
     {
       dataPointerCounterTplt = 0;
       contadorPointerLUInt = 0;
-      dataPointerTplt  = this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] + 3;
+      dataPointerTplt  = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] + 3;
       do
       {
         if ( ( *dataPointerTplt >= '0' ) && ( *dataPointerTplt <= '9' ) )
@@ -245,8 +319,8 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
         }
         else if ( *dataPointerTplt == '}' )
         {
-          this->functionToExecuteCPFnc[ dataPointerCounterTplt ] ();
-          this->dataTransmitCPTplt[ this->dataTransmitPointerLineCTplt ] += ( contadorPointerLUInt + 4 );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::functionToExecuteCPFnc[ dataPointerCounterTplt ] ();
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt ] += ( contadorPointerLUInt + 4 );
           return;
         }
       }
@@ -257,30 +331,30 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     {
       while ( *userDataLPCh != 0 )
       {
-        if ( this->sendCPFnc != 0 )
+        if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc != 0 )
         {
-          this->sendCPFnc ( *userDataLPCh );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc ( *userDataLPCh );
         }
 
-        if ( this->sendToData != 0 )
+        if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData != 0 )
         {
-          *this->sendToData = *userDataLPCh;
-          this->sendToData += 1;
-          *this->sendToData = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = *userDataLPCh;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData += 1;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = 0;
 
-          this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
 
-          if ( this->onBufferFullCPFnc != 0 )
+          if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc != 0 )
           {
             contadorLUInt += 1;
 
-            if ( this->bufferLengthCUInt == contadorLUInt )
+            if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::bufferLengthCUInt == contadorLUInt )
             {
               contadorLUInt = 0;
-              this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
-              this->onBufferFullCPFnc();
+              SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+              SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc();
 
-              this->sendToData = this->sendToDataOriginal;
+              SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal;
             }
           }
         }
@@ -291,30 +365,30 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 
     else
     {
-      if ( this->sendCPFnc != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc != 0 )
       {
-        this->sendCPFnc ( dataToSendLCh );
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendCPFnc ( dataToSendLCh );
       }
 
-      if ( this->sendToData != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData != 0 )
       {
-        *this->sendToData = dataToSendLCh;
-        this->sendToData += 1;
-        *this->sendToData = 0;
+        *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = dataToSendLCh;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData += 1;
+        *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = 0;
 
-        this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
 
-        if ( this->onBufferFullCPFnc != 0 )
+        if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc != 0 )
         {
           contadorLUInt += 1;
 
-          if ( ( this->bufferLengthCUInt == contadorLUInt ) || ( dataToSendLCh == 0 ) )
+          if ( ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::bufferLengthCUInt == contadorLUInt ) || ( dataToSendLCh == 0 ) )
           {
             contadorLUInt = 0;
-            this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
-            this->onBufferFullCPFnc();
+            SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+            SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc();
 
-            this->sendToData = this->sendToDataOriginal;
+            SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal;
           }
         }
       }
@@ -326,33 +400,33 @@ template<class typeDataToExchange, class typeDataToMountBeforeExchange, class ty
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onIncomingData ( typeDataToExchange inDataATplt )
 {
   // Maquina de estados - inicio ->
-  if ( this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] != '\0' )
+  if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] != '\0' )
   {
-    if ( *this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] == inDataATplt )
+    if ( *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] == inDataATplt )
     {
-      this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] ++;
-      if ( *this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] == '\0' )
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] ++;
+      if ( *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] == '\0' )
       {
-        this->dataReceivePointerLineCTplt ++;
-        this->flagClear( SEND_TO_DEVICE_FLAG_WAITING );
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_WAITING );
 
-        if ( this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] == '\0' )
+        if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] == '\0' )
         {
-          this->flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
         }
       }
     }
     else
     {
-      this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ] = &this->dataReceiveCPTplt[ this->dataReceivePointerLineCTplt ][ 0 ];
-      //this->EnumEvent = Event::EndLine;
-      //this->OnEvent ( Event::EndLine );
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ] = &SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceiveCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt ][ 0 ];
+      //SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::EnumEvent = Event::EndLine;
+      //SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::OnEvent ( Event::EndLine );
       //StackEnum::Add( Event::EndLine );
     }
   }
   else
   {
-    this->flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
+    SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_PROCCESS_END );
   }
   // Maquina de estados <- fim
 }
@@ -383,17 +457,17 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     // type: time
     if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'t' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'i' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'m' ) && ( *( ( *apcchPointer ) + 4 ) == ( typeDataToExchange )'e' ) )
     {
-      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] != 0 )
       {
         if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( inDataATplt == ( typeDataToExchange )':' ) || ( inDataATplt == ( typeDataToExchange )'/' ) )
         {
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
-          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = inDataATplt;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] ++;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = 0;
           return returnLCh;
         }
 
-        this->dataListLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ++;
       }
 
       else
@@ -420,17 +494,17 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     // type: snum
     else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'s' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'n' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'u' ) && ( *( ( *apcchPointer ) + 4 ) == ( typeDataToExchange )'m' ) )
     {
-      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != '\0' )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] != '\0' )
       {
         if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( inDataATplt == ( typeDataToExchange )'+' ) || ( inDataATplt == ( typeDataToExchange )'-' ) )
         {
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
-          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = inDataATplt;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] ++;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = 0;
           return returnLCh;
         }
 
-        this->dataListLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ++;
       }
 
       else
@@ -446,17 +520,17 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     // type: hex
     else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'h' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'e' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'x' ) )
     {
-      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] != 0 )
       {
         if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'a' ) && ( inDataATplt <= ( typeDataToExchange )'f' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'A' ) && ( inDataATplt <= ( typeDataToExchange )'F' ) ) )
         {
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
-          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = inDataATplt;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] ++;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = 0;
           return returnLCh;
         }
 
-        this->dataListLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ++;
       }
 
       else
@@ -472,17 +546,17 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     // type: num
     else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'n' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'u' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'m' ) )
     {
-      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] != 0 )
       {
         if ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) )
         {
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
-          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = inDataATplt;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] ++;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = 0;
           return returnLCh;
         }
 
-        this->dataListLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ++;
       }
 
       else
@@ -498,17 +572,17 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     // type: str
     else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'s' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'t' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'r' ) )
     {
-      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] != 0 )
       {
         if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'A' ) && ( inDataATplt <= ( typeDataToExchange )'Z' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'a' ) && ( inDataATplt <= ( typeDataToExchange )'z' ) ) || ( inDataATplt == ( typeDataToExchange )' ' ) )
         {
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
-          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = inDataATplt;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] ++;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = 0;
           return returnLCh;
         }
 
-        this->dataListLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ++;
       }
 
       else
@@ -535,17 +609,17 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     // type: all
     else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'a' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'l' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'l' ) )
     {
-      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] != 0 )
       {
         if ( ( inDataATplt != ( typeDataToExchange )'\r' ) && ( inDataATplt != ( typeDataToExchange )'\n' ) && ( inDataATplt != 0 ) )
         {
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
-          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
-          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = inDataATplt;
+          SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] ++;
+          *SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataToMountCPTplt[ SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ] = 0;
           return returnLCh;
         }
 
-        this->dataListLineCTplt ++;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt ++;
       }
 
       else
@@ -567,7 +641,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
   else if ( **apcchPointer == 0 )
   {
     ( *apcchPointer ) = apcchPointerStart;
-    this->flagSet( SEND_TO_DEVICE_FLAG_CHECK_END );
+    SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_CHECK_END );
     //qDebug() << "SEND_TO_DEVICE_FLAG_CHECK_END";
     returnLCh = ( char ) 1;
     //StackEnum::Add( e );
@@ -581,7 +655,7 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
     if ( **apcchPointer == 0 )
     {
       ( *apcchPointer ) = apcchPointerStart;
-      this->flagSet( SEND_TO_DEVICE_FLAG_CHECK_END );
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_CHECK_END );
       //qDebug() << "SEND_TO_DEVICE_FLAG_CHECK_END";
       returnLCh = ( char ) 1;
       //StackEnum::Add( e );
@@ -599,49 +673,49 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::run ()
 {
-  this->dataListLineCTplt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataListLineCTplt = 0;
 
-  this->dataTransmitPointerLineCTplt = 0;
-  this->dataReceivePointerLineCTplt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataTransmitPointerLineCTplt = 0;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::dataReceivePointerLineCTplt = 0;
 
-  this->flagClear( SEND_TO_DEVICE_FLAG_WAITING );
-  this->flagClear( SEND_TO_DEVICE_FLAG_NEXT_STEP );
-  this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_SEND );
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_WAITING );
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_NEXT_STEP );
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_EVENT_SEND );
 
-  this->flagSet( SEND_TO_DEVICE_FLAG_RUNING );
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_RUNING );
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::infinityLoop ()
 {
-  if ( this->flagTest( SEND_TO_DEVICE_FLAG_RUNING ) == true )
+  if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagTest( SEND_TO_DEVICE_FLAG_RUNING ) == true )
   {
-    if ( this->flagTest( SEND_TO_DEVICE_FLAG_WAITING ) == false )
+    if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagTest( SEND_TO_DEVICE_FLAG_WAITING ) == false )
     {
-      this->send ();
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::send ();
     }
   }
 
   else
   {
-    if ( this->flagTest( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND ) == true )
+    if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagTest( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND ) == true )
     {
-      this->flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
-      if ( this->onBufferFullCPFnc != 0 )
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagClear( SEND_TO_DEVICE_FLAG_EVENT_BUFFER_SEND );
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc != 0 )
       {
-        this->onBufferFullCPFnc();
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onBufferFullCPFnc();
       }
     }
 
-    if ( this->flagTest( SEND_TO_DEVICE_FLAG_EVENT_SEND ) == false )
+    if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagTest( SEND_TO_DEVICE_FLAG_EVENT_SEND ) == false )
     {
-      this->flagSet( SEND_TO_DEVICE_FLAG_EVENT_SEND );
+      SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet( SEND_TO_DEVICE_FLAG_EVENT_SEND );
       //qDebug() << "On end function run";
 
-      if ( this->onEndCPFnc != 0 )
+      if ( SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onEndCPFnc != 0 )
       {
-        this->sendToData = this->sendToDataOriginal;
-        this->onEndCPFnc ();
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToData = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::sendToDataOriginal;
+        SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::onEndCPFnc ();
       }
     }
   }
@@ -651,7 +725,7 @@ template<class typeDataToExchange, class typeDataToMountBeforeExchange, class ty
 void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagSet ( char flagACh )
 {
   char flagLCh = 1 << flagACh;
-  this->flagsCCh |= flagLCh;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagsCCh |= flagLCh;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
@@ -659,14 +733,14 @@ void SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
 {
   char flagLCh = 1 << flagACh;
   flagLCh = ~flagLCh;
-  this->flagsCCh &= flagLCh;
+  SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagsCCh &= flagLCh;
 }
 
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
 bool SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagTest ( char flagACh )
 {
   char flagLCh = 1 << flagACh;
-  flagLCh = this->flagsCCh & flagLCh;
+  flagLCh = SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::flagsCCh & flagLCh;
 
   if ( flagLCh == 0 )
   {

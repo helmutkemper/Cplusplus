@@ -182,7 +182,8 @@ class SendToDevice
 
        @endcode
      */
-    SendToDevice( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh );
+    static void init( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh );
+    SendToDevice();
 
     /**
      * @brief setSendFunction, recebe o ponteiro da função a ser chamada sempre que houver a necessidade de se enviar
@@ -192,14 +193,14 @@ class SendToDevice
      *
      * @param functPointerAPFn, este é um ponteiro de função do tipo void (*p)
      */
-    void setSendFunction ( PT_VOID_CH functPointerAPFn );
+    static void setSendFunction ( PT_VOID_CH functPointerAPFn );
 
     /**
      * @brief setSendToDataPointer, aponta para um buffer externo, no caso, um array de char, onde fica o dado montado.
      *
      * @param toDataATplt, ponteiro do array de char.
      */
-    void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt );
+    static void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt );
 
     /**
      * @brief setSendToDataPointer, aponta para um buffer externo, no caso, um array de char, onde fica o dado montado.
@@ -208,21 +209,21 @@ class SendToDevice
      *
      * @param lengthAUInt, tamanho do buffer. Deve receber sizeof( buffer ) - 1, o último dado é sempre '\0'
      */
-    void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt, unsigned int lengthAUInt );
+    static void setSendToDataPointer ( typeDataToMountBeforeExchange *toDataATplt, unsigned int lengthAUInt );
 
     /**
      * @brief setOnEndFunction, recebe o ponteiro da função a ser chamada ao fim do processo de envio.
      *
      * @param functPointerAPFn, este é um ponteiro de função do tipo void ()
      */
-    void setOnEndFunction ( PT_VOID_VOID functPointerAPFn );
+    static void setOnEndFunction ( PT_VOID_VOID functPointerAPFn );
 
     /**
      * @brief setOnBufferFullFunction, recebe o ponteiro da função a ser chamada quando o buffer estiver cheio.
      *
      * @param functPointerAPFn, este é um ponteiro de função do tipo void ()
      */
-    void setOnBufferFullFunction ( PT_VOID_VOID functPointerAPFn );
+    static void setOnBufferFullFunction ( PT_VOID_VOID functPointerAPFn );
 
     /**
      * @brief onIncomingData, Este método deve ser usado sempre que um novo dado chegar pela porta serial para que o mesmo
@@ -230,7 +231,7 @@ class SendToDevice
      *
      * @param inDataATplt, dado recebido pela porta serial.
      */
-    void onIncomingData ( typeDataToExchange inDataATplt );
+    static void onIncomingData ( typeDataToExchange inDataATplt );
 
     /**
      * @brief testPointer, este método deve ser usado para gerar eventos sempre que uma determinada constante chegar pela
@@ -267,12 +268,12 @@ class SendToDevice
      * @return interio convertido em signed char. négativo indica erro na constante recebida em relação a esperada, zero não é
      *         nada e um positivo indica constante encontrada.
      */
-    char testPointer ( typeDataToExchange **apcchPointer, typeDataToExchange *apcchPointerStart, typeDataToMountBeforeExchange inDataATplt );
+    static char testPointer ( typeDataToExchange **apcchPointer, typeDataToExchange *apcchPointerStart, typeDataToMountBeforeExchange inDataATplt );
 
     /**
      * @brief clear, limpa todos os ponteiros na pilha de dados a serem enviados.
      */
-    void clear ();
+    static void clear ();
 
     /**
      * @brief addReceiveData, indica qual é o dado esperado na porta serial antes do próximo envio. Caso não haja a necessidade de
@@ -285,7 +286,7 @@ class SendToDevice
      *
      * @param dataAddressAPTplt, endereço do dado a ser comparado no recebimento.
      */
-    void addReceiveData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt );
+    static void addReceiveData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt );
 
     /**
      * @brief addTransmitData, Indica qual o endereço do dado a ser enviado pela porta serial. Neste ponto, perceba que a classe
@@ -302,7 +303,7 @@ class SendToDevice
      *
      * @param dataAddressAPTplt, endereço do dado a ser transmitido.
      */
-    void addTransmitData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt );
+    static void addTransmitData ( typeStackStepsSize addressATplt, typeDataToExchange *dataAddressAPTplt );
 
     /**
      * @brief addPointer, todos os dados recebidos podem ser separados conforme falado na função testPointer() e todo dado enviado
@@ -316,7 +317,7 @@ class SendToDevice
      *
      * @param dataAddressAPTplt, ponteiro do dado.
      */
-    void addPointer ( typeStackDataSize addressATplt, typeDataToMountBeforeExchange *dataAddressAPTplt );
+    static void addPointer ( typeStackDataSize addressATplt, typeDataToMountBeforeExchange *dataAddressAPTplt );
 
     /**
      * @brief addFunctionData, o dado enviado pode ser usado para rodar uma função interna do uC e atualizar alguma informação
@@ -326,12 +327,12 @@ class SendToDevice
      *
      * @param functionAddressAPTplt, endereço da função.
      */
-    void addFunctionData ( typeStackStepsSize addressATplt, PT_VOID_VOID functionAddressAPTplt );
+    static void addFunctionData ( typeStackStepsSize addressATplt, PT_VOID_VOID functionAddressAPTplt );
 
     /**
      * @brief infinityLoop, coloque esta função de forma que ela fique sendo chamada sempre, independente de haver dados ou não.
      */
-    void infinityLoop ();
+    static void infinityLoop ();
 
     /**
      * @brief run, inicia o processo de envio de dados.
@@ -342,65 +343,65 @@ class SendToDevice
      *        {fn:n} - executa uma função previamente registrada no endereço n, antes do envio do dado.
      *        {bye}  - char( 1A ), usado nas funções do motem baseados em comandos AT.
      */
-    void run ();
+    static void run ();
 
     /**
      * @brief lembre-se de destruir a classe e limpar a memória.
      */
-    ~SendToDevice();
+    static void destructor();
 
-  private:
+  //private:
     /**
      * @brief flagSet, setBit(). A linguagem C/C++ usa um byte interio para booleano, este método usa 1 byte para 8 booleanos.
      *
      * @param flagACh, valor entre 0 e 7 com o endereço do bit.
      */
-    void flagSet ( char flagACh );
+    static void flagSet ( char flagACh );
 
     /**
      * @brief flagClear, clearBit(). A linguagem C/C++ usa um byte interio para booleano, este método usa 1 byte para 8 booleanos.
      *
      * @param flagACh, valor entre 0 e 7 com o endereço do bit.
      */
-    void flagClear ( char flagACh );
+    static void flagClear ( char flagACh );
 
     /**
      * @brief flagTest, testBit(). A linguagem C/C++ usa um byte interio para booleano, este método usa 1 byte para 8 booleanos.
      * @param flagACh, valor entre 0 e 7 com o endereço do bit.
      * @return true ou false com o valor do bit.
      */
-    bool flagTest ( char flagACh );
+    static bool flagTest ( char flagACh );
 
     /**
      * @brief send, processa o dado.
      */
-    void send ();
+    static void send ();
 
     /**
      * @brief bufferLengthCUInt, tamanho do array de dados a serem recebidos ou transmitidos.
      */
-    unsigned int bufferLengthCUInt;
+    static unsigned int bufferLengthCUInt;
 
-    PT_VOID_VOID onBufferFullCPFnc;
-    PT_VOID_VOID onEndCPFnc;
-    PT_VOID_CH sendCPFnc;
-    typeDataToMountBeforeExchange *sendToData;
-    typeDataToMountBeforeExchange *sendToDataOriginal;
+    static PT_VOID_VOID onBufferFullCPFnc;
+    static PT_VOID_VOID onEndCPFnc;
+    static PT_VOID_CH sendCPFnc;
+    static typeDataToMountBeforeExchange *sendToData;
+    static typeDataToMountBeforeExchange *sendToDataOriginal;
 
-    char flagsCCh;
+    static char flagsCCh;
 
-    PT_VOID_VOID *functionToExecuteCPFnc;
-    typeDataToMountBeforeExchange **dataToMountCPTplt;
-    typeDataToExchange **dataTransmitCPTplt;
-    typeDataToExchange **dataReceiveCPTplt;
+    static PT_VOID_VOID *functionToExecuteCPFnc;
+    static typeDataToMountBeforeExchange **dataToMountCPTplt;
+    static typeDataToExchange **dataTransmitCPTplt;
+    static typeDataToExchange **dataReceiveCPTplt;
 
-    typeStackStepsSize stackStepsSizeCTplt;
-    typeStackDataSize stackDataSizeCTplt;
-    typeStackStepsSize stackFunctionsSizeCTplt;
+    static typeStackStepsSize stackStepsSizeCTplt;
+    static typeStackDataSize stackDataSizeCTplt;
+    static typeStackStepsSize stackFunctionsSizeCTplt;
 
-    typeStackDataSize dataListLineCTplt;
-    typeStackStepsSize dataTransmitPointerLineCTplt;
-    typeStackStepsSize dataReceivePointerLineCTplt;
+    static typeStackDataSize dataListLineCTplt;
+    static typeStackStepsSize dataTransmitPointerLineCTplt;
+    static typeStackStepsSize dataReceivePointerLineCTplt;
 };
 
 template class SendToDevice<const char, char, unsigned char, unsigned char>;

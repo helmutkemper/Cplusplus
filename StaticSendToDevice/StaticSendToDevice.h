@@ -1,5 +1,5 @@
-#ifndef SENDTODEVICE_H
-#define SENDTODEVICE_H
+#ifndef STATIC_SEND_TO_DEVICE_H
+#define STATIC_SEND_TO_DEVICE_H
 
 /**
  *  Licença de uso.
@@ -64,8 +64,8 @@
  *         os dados a serem enviados sem maiores problemas.
  *
  *         Esta classe tem os seguintes templates:
- *         template class SendToDevice<const char, char, unsigned char, unsigned char>;
- *         template class SendToDevice<const unsigned char, unsigned char, unsigned char, unsigned char>;
+ *         template class StaticSendToDevice<const char, char, unsigned char, unsigned char>;
+ *         template class StaticSendToDevice<const unsigned char, unsigned char, unsigned char, unsigned char>;
  *
  *         Para o recebimento dos dados, esta classe recebe dados unitários, um char por vez, e usa ponteiros externos
  *         para varrer um modelo de string esperada e procurar por dados contidos dentro da string e arquivar os dados em
@@ -94,11 +94,11 @@
  *          é mais do que suficiente para a tarefa.
  */
 template<class typeDataToExchange, class typeDataToMountBeforeExchange, class typeStackStepsSize, class typeStackDataSize>
-class SendToDevice
+class StaticSendToDevice
 {
   public:
     /**
-     * @brief SendToDevice, construtor da classe, responsável por alocar dinamicamente o espaço de memória da fila de
+     * @brief StaticSendToDevice, construtor da classe, responsável por alocar dinamicamente o espaço de memória da fila de
      *        constantes e da fila de variáveis usadas na hora de montar as constantes. Defina o valor máximo de cada
      *        fila com o cuidado de alocar apenas a quantidade de espaço necessário para a tarefa e nada a mais.
      *
@@ -129,7 +129,7 @@ class SendToDevice
                 // 1° elemento, quantidade máxima de passos necessário para comprir a tarefa + 1;
                 // 2° elemento, quantidade máxima de espaços na memória para arquivar dados enviados/recebidos;
                 // 3° elemento, quantidade máxima de funções a serem executadas antes do envio dos dados;
-                SendToDevice<const char, char, unsigned char, unsigned char> *sd = new SendToDevice<const char, char, unsigned char, unsigned char>( 10, 5, 5 );
+                StaticSendToDevice<const char, char, unsigned char, unsigned char> *sd = new StaticSendToDevice<const char, char, unsigned char, unsigned char>( 10, 5, 5 );
 
                 // Existe a necessidade de enviar dados pela porta serial, um de cada vez?
                 // 1° elemento, ponteiro de função tipo void ( *p ) ( template )
@@ -183,7 +183,7 @@ class SendToDevice
        @endcode
      */
     static void init( typeStackStepsSize stackStepsSizeAUCh, typeStackDataSize stackDataSizeAUCh, typeStackStepsSize stackFunctionsSizeAUCh );
-    SendToDevice();
+    StaticSendToDevice();
 
     /**
      * @brief setSendFunction, recebe o ponteiro da função a ser chamada sempre que houver a necessidade de se enviar
@@ -404,7 +404,7 @@ class SendToDevice
     static typeStackStepsSize dataReceivePointerLineCTplt;
 };
 
-template class SendToDevice<const char, char, unsigned char, unsigned char>;
-template class SendToDevice<const unsigned char, unsigned char, unsigned char, unsigned char>;
+template class StaticSendToDevice<const char, char, unsigned char, unsigned char>;
+template class StaticSendToDevice<const unsigned char, unsigned char, unsigned char, unsigned char>;
 
-#endif // SENDTODEVICE_H
+#endif // STATIC_SEND_TO_DEVICE_H

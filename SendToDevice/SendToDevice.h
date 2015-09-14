@@ -251,6 +251,7 @@ class SendToDevice
      *        {num}  - Captura número, formato: [0-9]{1,}
      *        {hex}  - Captura número, formato: [0-9a-fA-F]{1,}
      *        {str}  - Captura texto, formato: [0-9a-z(sp)]{1,}
+     *        {surl} - Captura url simples, formato: [a-zA-Z0-9._/:&?=]{1,}
      *        {istr} - Ignora texto, formato: [^0-9a-z(sp)]{1,}
      *        {all}  - Captura tudo, formato: [^\r\n\0]
      *

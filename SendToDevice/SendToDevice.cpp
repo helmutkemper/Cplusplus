@@ -377,11 +377,55 @@ template<class typeDataToExchange, class typeDataToMountBeforeExchange, class ty
 char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackStepsSize, typeStackDataSize>::testPointer ( typeDataToExchange **apcchPointer, typeDataToExchange *apcchPointerStart, typeDataToMountBeforeExchange inDataATplt )
 {
   char returnLCh = 0;
+
+  typeStackStepsSize addressLTplt = 0;
+  typeDataToExchange **countPointerLTplt = 4;
+
   restart_process:
+
+
   if ( **apcchPointer == ( typeDataToExchange )'{' )
   {
+    // type: pt:NNN
+    if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'p' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'t' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )':' ) )
+    {
+      addressLTplt = 0;
+      countPointerLTplt = 4;
+
+      //this->dataToMountCPTplt[ this->dataListLineCTplt ] += 3;
+      do
+      {
+        if ( ( *( apcchPointer + countPointerLTplt ) >= ( typeDataToExchange )'0' ) && ( *( apcchPointer + countPointerLTplt ) <= ( typeDataToExchange )'9' ) )
+        {
+          addressLTplt *= 10;
+          addressLTplt += ( *dataPointerTplt - 0x30 );
+          dataPointerTplt += 1;
+          contadorPointerLUInt += 1;
+        }
+        else if ( *dataPointerTplt == '}' )
+        {
+          userDataLPCh = this->dataToMountCPTplt[ dataPointerCounterTplt ];
+          break;
+        }
+      }
+      while ( true );
+
+
+
+
+
+
+
+
+
+
+
+
+
+    }
+
     // type: time
-    if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'t' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'i' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'m' ) && ( *( ( *apcchPointer ) + 4 ) == ( typeDataToExchange )'e' ) )
+    else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'t' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'i' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'m' ) && ( *( ( *apcchPointer ) + 4 ) == ( typeDataToExchange )'e' ) )
     {
       if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
       {
@@ -519,6 +563,32 @@ char SendToDevice<typeDataToExchange, typeDataToMountBeforeExchange, typeStackSt
       }
 
       ( *apcchPointer ) = ( *apcchPointer ) + 5;
+    }
+
+    // type: surl
+    else if ( ( *( ( *apcchPointer ) + 1 ) == ( typeDataToExchange )'s' ) && ( *( ( *apcchPointer ) + 2 ) == ( typeDataToExchange )'u' ) && ( *( ( *apcchPointer ) + 3 ) == ( typeDataToExchange )'r' ) && ( *( ( *apcchPointer ) + 4 ) == ( typeDataToExchange )'l' ) )
+    {
+      if ( this->dataToMountCPTplt[ this->dataListLineCTplt ] != 0 )
+      {
+        if ( ( ( inDataATplt >= ( typeDataToExchange )'0' ) && ( inDataATplt <= ( typeDataToExchange )'9' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'A' ) && ( inDataATplt <= ( typeDataToExchange )'Z' ) ) || ( ( inDataATplt >= ( typeDataToExchange )'a' ) && ( inDataATplt <= ( typeDataToExchange )'z' ) ) || ( inDataATplt == ( typeDataToExchange )'.' ) || ( inDataATplt == ( typeDataToExchange )'_' ) || ( inDataATplt == ( typeDataToExchange )'/' ) || ( inDataATplt == ( typeDataToExchange )':' ) || ( inDataATplt == ( typeDataToExchange )'&' ) || ( inDataATplt == ( typeDataToExchange )'?' ) || ( inDataATplt == ( typeDataToExchange )'=' ) )
+        {
+          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = inDataATplt;
+          this->dataToMountCPTplt[ this->dataListLineCTplt ] ++;
+          *this->dataToMountCPTplt[ this->dataListLineCTplt ] = 0;
+          return returnLCh;
+        }
+
+        this->dataListLineCTplt ++;
+      }
+
+      else
+      {
+        returnLCh = ( char ) -7;
+        //StackEnum::Add( Event::PStrError );
+        goto reset_pointers;
+      }
+
+      ( *apcchPointer ) = ( *apcchPointer ) + 6;
     }
 
     // type: inum
